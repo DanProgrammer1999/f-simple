@@ -10,6 +10,7 @@
 	struct Atom *atom;
 	struct List *list;
 	struct Literal *literal;
+	const List *null;
 }
 
 %start Program
@@ -17,36 +18,36 @@
 
 %%
 
-Literal: INTEGER
-	| BOOLEAN
-	| REAL
+Literal: INTEGER	{$$ = new Literal($1, nullptr, nullptr);}
+	| BOOLEAN	{$$ = new Literal(nullptr, $1, nullptr);}
+	| REAL     	{$$ = new Literal(nullptr, nullptr, $1);}
 	;
 
-Atom: IDENTIFIER
-	| KEYWORD
-	| Literal
+Atom: IDENTIFIER	{$$ = new Atom($1, false);}
+	| KEYWORD	{$$ = new Atom($1, true);}
+	| Literal	{$$ = new Atom($1);}
 	;
 
-SimpleList: '(' Element ')'
-	| '(' ')' {$$ = Null}
+SimpleList: '(' Element ')'	{$$ = new List($1);}
+	| '(' ')'		{$$ = null;}
 	;
 
-ElementList: Element
-	| Element ElementList
+ElementList: Element		{$$ = new List($1);}
+	| Element ElementList   {$1->addElement($2); $$ = $1;}
 	;
 
-List: SimpleList
-	| ElementList
+List: SimpleList	{$$ = $1;}
+	| ElementList	{$$ = $1;}
 	;
 
-Element: Atom
-	| List
+Element: Atom	{$$ = new Element($1, nullptr);}
+	| List	{$$ = new Element(nullptr, $1);}
 	;
 
-ElementSequence: Element
-	| Element ElementSequence
+ElementSequence: Element		{$$ = new List($1);}
+	| Element ElementSequence	{$1->addElement($2); $$ = $1;}
 	;
 
-Program: ElementSequence;
+Program: ElementSequence {$$ = $1;};
 
 %%
