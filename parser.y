@@ -17,23 +17,14 @@
 
 %%
 
-Program: ElementSequence;
-
-ElementSequence: Element
-	| Element ';' ElementSequence
-	;
-
-Element: Atom
-	| List
+Literal: INTEGER
+	| BOOLEAN
+	| REAL
 	;
 
 Atom: IDENTIFIER
 	| KEYWORD
 	| Literal
-	;
-
-List: SimpleList
-	| ElementList
 	;
 
 SimpleList: '(' Element ')'
@@ -44,9 +35,18 @@ ElementList: Element
 	| Element ElementList
 	;
 
-Literal: INTEGER
-	| BOOLEAN
-	| REAL
+List: SimpleList
+	| ElementList
 	;
+
+Element: Atom
+	| List
+	;
+
+ElementSequence: Element
+	| Element ElementSequence
+	;
+
+Program: ElementSequence;
 
 %%
