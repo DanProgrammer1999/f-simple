@@ -5,6 +5,7 @@
 %}
 
 %union{
+	char *stringValue;
 	struct ElementSequence *program;
 	struct Element *element;
 	struct Atom *atom;
@@ -14,8 +15,16 @@
 }
 
 %start Program
+
 %token IDENTIFIER INTEGER REAL BOOLEAN KEYWORD
 
+%type <stringValue> IDENTIFIER
+%type <program> List
+%type <element> Element
+%type <atom> Atom
+%type <list> List
+%type <literal> Literal
+%type <null> List
 %%
 
 Literal: INTEGER	{$$ = new Literal($1, nullptr, nullptr);}
