@@ -1,0 +1,34 @@
+// Returns n-th Fibbonacci number
+(func Fibo(n)
+    (
+        (func Fib-Iter (a b count)
+            (
+                cond (equal count 0)
+                b
+                (Fib-Iter (plus a b) a (minus count 1))
+            )
+        )
+        (Fib-Iter 1 0 n)
+    )
+)
+
+// Returns list of n Fibbonacci numbers (from 1)
+(func Fibonacci(n)
+    (
+        (setq res ())
+        (setq i n)
+        (while (nonequal i 0)
+            (
+                (cons (Fibbo i) res)
+                (minus i 1)
+            )
+        )
+    )
+)
+
+// Define & execute Main Function
+(func Main () 
+    (Fibonacci 10) 
+)
+
+(Main)
