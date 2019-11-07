@@ -1,56 +1,68 @@
-#ifndef F_SIMPLE_PARSER_H
-#define F_SIMPLE_PARSER_H
-
 #include <list>
+#include <vector>
+#include <string>
 
-struct Literal {
-    int *integer_value;
-    bool *boolean_value;
-    double *real_value;
+class Element;
+typedef std::vector<Element*> Elements;
 
-    Literal(int *integer_value, bool *boolean_value, double *real_value) :
-            integer_value(integer_value), boolean_value(boolean_value), real_value(real_value) {};
+class Program {
+public:
+    Elements elements;
+
+    Program() {}
+    Program(Elements elements) : elements(elements) {}
 };
 
-struct Atom {
-    char *identifier{};
-    bool is_keyword = false;
-    Literal *literal{};
+class Element {};
 
-    Atom(char *identifier, bool is_keyword) :
-            identifier(identifier), is_keyword(is_keyword) {};
+class Atom : public Element {
+public:
+    std::string identifier;
 
-    explicit Atom(Literal *literal):
-        literal(literal){};
+    Atom() {}
+    Atom(std::string identifier) : identifier(identifier) {}
 };
 
-struct Element;
+class Keyword : public Atom {};
 
-struct List {
-    std::list<Element *> list;
-    bool is_null = false;
+class Literal : public Element {};
 
-    explicit List(Element *element) {
-        if (element != nullptr) {
-            list.push_back(element);
-        } else {
-            is_null = true;
-        }
+class Integer : public Literal {
+    int value;
+
+    Integer() {}
+    Integer(int value) : value(value) {}
+};
+
+class Real : public Literal {
+    double value;
+
+    Real() {}
+    Real(double value) : value(value) {}
+};
+
+class Boolean : public Literal {
+    bool value;
+
+    Boolean() {}
+    Boolean(bool value) : value(value) {}
+};
+
+class Null : public Literal {};
+
+class List : public Element {
+public:
+    Elements elements;
+
+    List() {}
+    List(Elements elements) : elements(elements) {}
+};
+
+class PredefinedList : public List {
+    PredefinedList(Keyword* keyword) {
+        elements.push_back(keyword);
     }
-
-    void addElement(Element *element) {
-        list.push_back(element);
-    }
 };
 
-const List null = List(nullptr);
 
-struct Element {
-    Atom *atom;
-    List *list;
 
-    explicit Element(Atom *atom, List *list) :
-            atom(atom), list(list) {};
-};
-
-#endif //F_SIMPLE_PARSER_H

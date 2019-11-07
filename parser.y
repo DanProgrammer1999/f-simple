@@ -1,62 +1,81 @@
 %{
-	int yylex(void);
-        int yyparse();
-        int yyerror(const char *msg);
+	#include "parser.h"
+	#include <iostream>
+
+	Program* root;
+
+	int yylex();
+	int yyparse();
+	void yyerror(const char* s) { printf("ERROR: %sn", s); }
 %}
 
-%union{
-	char *stringValue;
-	struct ElementSequence *program;
-	struct Element *element;
-	struct Atom *atom;
-	struct List *list;
-	struct Literal *literal;
-	const List *null;
+%union {
+	int token;
+	std::string string;
+
+	Program* program;
+	Element* element;
+	Literal* literal;
+	Elements* elements;
+	Atom* atom;
+	List* list;
 }
+
+%token <string> 	IDENTIFIER INTEGER REAL BOOLEAN NULL
+
+%token <token> 		KEYWORD
+
+%token <token> 		LPARENT
+%token <token> 		RPARENT
+
+%type <program> 	Program
+%type <element> 	Element
+%type <elements> 	Elements
+%type <literal> 	Literal
+%type <atom> 		Atom
+%type <list> 		List
 
 %start Program
 
-%token IDENTIFIER INTEGER REAL BOOLEAN KEYWORD
-
-%type <stringValue> IDENTIFIER
-%type <program> List
-%type <element> Element
-%type <atom> Atom
-%type <list> List
-%type <literal> Literal
-%type <null> List
 %%
 
-Literal: INTEGER	{$$ = new Literal($1, nullptr, nullptr);}
-	| BOOLEAN	{$$ = new Literal(nullptr, $1, nullptr);}
-	| REAL     	{$$ = new Literal(nullptr, nullptr, $1);}
+Program
+	: Elements {root = new Program(*$1);}
 	;
 
-Atom: IDENTIFIER	{$$ = new Atom($1, false);}
-	| KEYWORD	{$$ = new Atom($1, true);}
-	| Literal	{$$ = new Atom($1);}
+Elements
+	: 		   Element	{$$ = new Elements(); $$->push_back($1);}
+	| Elements Element	{$1->push_back($2);}
 	;
 
-SimpleList: '(' Element ')'	{$$ = new List($1);}
-	| '(' ')'		{$$ = null;}
+Element
+	: Atom		{$$ = $1;}
+	| Literal	{$$ = $1;}
+	| List		{$$ = $1;}
 	;
 
-ElementList: Element		{$$ = new List($1);}
-	| Element ElementList   {$1->addElement($2); $$ = $1;}
+Atom
+	: IDENTIFIER {$$ = new Atom($1);}
 	;
 
-List: SimpleList	{$$ = $1;}
-	| ElementList	{$$ = $1;}
+Literal
+	: INTEGER	{$$ = new Integer($1);}
+	| REAL		{$$ = new Real($1);}
+	| BOOLEAN	{$$ = new Boolean($1);}
+	| NULL		{$$ = new Null();}
 	;
 
-Element: Atom	{$$ = new Element($1, nullptr);}
-	| List	{$$ = new Element(nullptr, $1);}
+List
+	: LPARENT	 	 	       RPARENT {$$ = new List();}
+	| LPARENT      	  Elements RPARENT {$$ = new List(*$2);}
+	| LPARENT KEYWORD Elements RPARENT {Keyword keyword = new Keyword(*$2); $$ = new PredefinedList(keyword);}
 	;
-
-ElementSequence: Element		{$$ = new List($1);}
-	| Element ElementSequence	{$1->addElement($2); $$ = $1;}
-	;
-
-Program: ElementSequence {$$ = $1;};
 
 %%
+
+int main(int argc, char **argv)
+{
+    yyparse();
+    std::cout << root << std::endl;
+    return 0;
+}
