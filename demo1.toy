@@ -8,7 +8,7 @@
                 (Fib-Iter (plus a b) a (minus count 1))
             )
         )
-        (Fib-Iter 1 0 n)
+        (return (Fib-Iter 1 0 n))
     )
 )
 
@@ -23,12 +23,14 @@
                 (minus i 1)
             )
         )
+        (return res)
     )
 )
 
 // Define & execute Main Function
 (func Main () 
     (Fibonacci 10) 
+    // TODO Print result
 )
 
 (Main)

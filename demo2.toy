@@ -1,0 +1,53 @@
+// Calculates approx sqrt (with 0.01 accuracy)
+(func Sqrt(x)
+    (setq sqrt 0.00)
+    (
+        while (less (times sqrt sqrt) x)
+        (
+            (setq sqrt (plus sqrt 0.01))
+        )
+    )
+    (return sqrt)
+)
+
+// Translates to list
+(func ToList (a) (a))
+
+// Calculates real roots of quadratic equation
+// A, B, C are coefficients of the equation
+(func QuadraticRoots (A B C)
+    (
+        // D = B * B - 4 * A * C
+        (setq D (minus (times B B) (times 4 (times A C))))
+
+        (
+            cond (less D 0)
+            (
+                // No real roots
+                return ()
+            ) 
+            (
+                (setq x1 (divide (plus (minus 0 B) (Sqrt D)) (times 2 A)))
+                cond (equal D 0)
+                (
+                    // One real root
+                    return (ToList x1)
+                )
+                (
+                    // Two real roots
+                    (setq x2 (divide (minus (minus 0 B) (Sqrt D)) (times 2 A)))
+                    (return (cons x2 (ToList x1)))
+                )
+            )
+        )
+
+    )
+)
+
+// Define & execute Main Function
+(func Main () 
+    (QuadraticRoots 4 4 1) 
+    // TODO Print result
+)
+
+(Main)
