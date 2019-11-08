@@ -1,17 +1,18 @@
 %{
 	#include "parser.h"
 	#include <iostream>
+	#include <string>
 
 	Program* root;
 
-	int yylex();
-	int yyparse();
+	extern "C" int yylex();
+	extern "C" int yyparse();
 	void yyerror(const char* s) { printf("ERROR: %sn", s); }
 %}
 
 %union {
 	int token;
-	std::string string;
+	std::string *string;
 
 	Program* program;
 	Element* element;
@@ -21,9 +22,10 @@
 	List* list;
 }
 
-%token <string> 	IDENTIFIER INTEGER REAL BOOLEAN NULL
+%token <string> 	IDENTIFIER KEYWORD
 
-%token <token> 		KEYWORD
+%token <token> 		INTEGER REAL BOOLEAN NIL
+%token END 			0
 
 %token <token> 		LPARENT
 %token <token> 		RPARENT
@@ -40,7 +42,7 @@
 %%
 
 Program
-	: Elements {root = new Program(*$1);}
+	: Elements END {root = new Program(*$1);}
 	;
 
 Elements
@@ -55,20 +57,20 @@ Element
 	;
 
 Atom
-	: IDENTIFIER {$$ = new Atom($1);}
+	: IDENTIFIER {$$ = new Atom(*$1);}
 	;
 
 Literal
 	: INTEGER	{$$ = new Integer($1);}
 	| REAL		{$$ = new Real($1);}
 	| BOOLEAN	{$$ = new Boolean($1);}
-	| NULL		{$$ = new Null();}
+	| NIL		{$$ = new Nil();}
 	;
 
 List
 	: LPARENT	 	 	       RPARENT {$$ = new List();}
 	| LPARENT      	  Elements RPARENT {$$ = new List(*$2);}
-	| LPARENT KEYWORD Elements RPARENT {Keyword keyword = new Keyword(*$2); $$ = new PredefinedList(keyword);}
+	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);}
 	;
 
 %%
@@ -77,5 +79,6 @@ int main(int argc, char **argv)
 {
     yyparse();
     std::cout << root << std::endl;
+	root->print();
     return 0;
 }

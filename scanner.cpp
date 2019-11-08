@@ -1,7 +1,13 @@
-#include <ctype.h>
+// #include <ctype.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include "parser.h"
+#include "parser.tab.h"
+
+#define yyterminate() return mapToCode(Token::Type::EndOfCode)
+
+extern "C" int yylex();
 
 class Token
 {
@@ -14,8 +20,6 @@ public:
         Comment,
         LParent,
         RParent,
-        Plus,
-        Minus,
         Slash,
         WhatIsThatRyadovoyKucha,
         Keyword,
@@ -196,7 +200,7 @@ Token Lexer::next()
 
     switch (peek())
     {
-    case '\0':
+    case EOF:
         return atom(Token::Type::EndOfCode);
     case 'a':
     case 'b':
@@ -309,13 +313,11 @@ Token Lexer::identifier()
 {
     std::string start;
     start += peek();
-    get();
-    while (is_identifier(peek()))
+    while (is_identifier(get()))
     {
         start += peek();
-        get();
     }
-
+    reset();
     return keyword(start);
 }
 
@@ -348,23 +350,19 @@ Token Lexer::number()
 {
     std::string start;
     start += peek();
-    get();
-    while (is_number(peek()))
+    while (is_number(get()))
     {
         start += peek();
-        get();
     }
 
     if (peek() == '.')
     {
         start += peek();
-        get();
-        if (is_number(peek()))
+        if (is_number(get()))
         {
-            while (is_number(peek()))
+            while (is_number(get()))
             {
                 start += peek();
-                get();
             }
 
             return Token(Token::Type::Real, start);
@@ -374,31 +372,28 @@ Token Lexer::number()
             reset();
         }
     }
+    reset();
     return Token(Token::Type::Integer, start);
 }
 
 Token Lexer::number(std::string start)
 {
     start += peek();
-    get();
-    while (is_number(peek()))
+    while (is_number(get()))
     {
         start += peek();
-        get();
     }
 
     if (peek() == '.')
     {
         start += peek();
-        get();
-        if (is_number(peek()))
+        if (is_number(get()))
         {
-            while (is_number(peek()))
+            while (is_number(get()))
             {
                 start += peek();
-                get();
             }
-
+            reset();
             return Token(Token::Type::Real, start);
         }
         else
@@ -406,6 +401,7 @@ Token Lexer::number(std::string start)
             reset();
         }
     }
+    reset();
     return Token(Token::Type::Integer, start);
 }
 
@@ -441,8 +437,6 @@ std::ostream &operator<<(std::ostream &os, const Token::Type &type)
         "Comment",
         "LParent",
         "RParent",
-        "Plus",
-        "Minus",
         "Slash",
         "WhatIsThatRyadovoyKucha",
         "Keyword",
@@ -451,21 +445,42 @@ std::ostream &operator<<(std::ostream &os, const Token::Type &type)
     return os << names[static_cast<int>(type)];
 }
 
+int mapToCode(Token::Type type)
+{
+    static int tokens[11] = {END,
+                             IDENTIFIER,
+                             INTEGER,
+                             1,
+                             LPARENT,
+                             RPARENT,
+                             2,
+                             3,
+                             KEYWORD,
+                             REAL,
+                             BOOLEAN};
+    return tokens[static_cast<int>(type)];
+}
+
 int yylex()
 {
     Lexer lexer;
     auto token = lexer.next();
 
-    std::cout << token.type() << " " << token.lexeme() << std::endl;
+    // std::cout << token.type() << " " << token.lexeme() << std::endl;
 
-    return static_cast<int>(token.type());
-}
-
-int main()
-{
-    while (true) {
-        if (yylex() == 0) break;
+    if (token.type() == Token::Type::EndOfCode)
+    {
+        return -1;
     }
 
-    return 0;
+    if (token.type() == Token::Type::Identifier || token.type() == Token::Type::Keyword)
+    {
+        yylval.string = new std::string(token.lexeme());
+    }
+    else
+    {
+        yylval.token = mapToCode(token.type());
+    }
+
+    return mapToCode(token.type());
 }
