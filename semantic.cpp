@@ -580,9 +580,15 @@ public:
         return functions[name];
     }
 
+<<<<<<< HEAD
     FunctionPointer set(std::string name, FunctionPointer value) {
         FunctionPointer res = nullptr;
         if (has(name)) {
+=======
+    FunctionPointer set(std::string name, FunctionPointer value){
+        FunctionPointer res = nullptr;
+        if(has(name)){
+>>>>>>> basic functionality for context class
             res = functions[name];
         }
 
@@ -591,7 +597,11 @@ public:
         return res;
     }
 
+<<<<<<< HEAD
     Context *copy() {
+=======
+    Context* copy(){
+>>>>>>> basic functionality for context class
         auto newContext = new Context();
         // TODO will this make a copy?
         newContext->functions = functions;
