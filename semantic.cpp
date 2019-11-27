@@ -550,6 +550,46 @@ class LambdaFunction : public CustomFunction {
                 CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
 };
 
+class Function : public Element {
+private:
+    std::string name{};
+    std::vector<std::string> *args{};
+    Element *body;
+
+public:
+    Function(Atom *name, List *args, Element *body): body(body) {
+        if(name != nullptr && !name->identifier.empty()){
+            this->name = name->identifier;
+        }
+        // else it is nullptr by default
+
+        for(auto elem: args->elements) {
+            try {
+                Atom *arg = (Atom *) elem;
+                this->args->push_back(arg->identifier);
+            }
+            catch (std::exception &) {
+                // invalid element type exception, must be atom
+            }
+        }
+    }
+
+    Element eval(Context* context, List *args){
+        // if body is literal, simply return its value
+
+        // else if body is atom, try to look it up in context dict, and throw exception if does not exist
+        // but not good approach, since should bind the function to value in context when declared, not when called,
+        // as context may change
+        // better resolve value of literal before creating a function
+
+        // if it's a list, create new context (copy), execute statements one by one, return result.
+    }
+
+    // # TODO maybe?
+    void print() override {}
+};
+
+
 class Context {
 private:
     Context() = default;
@@ -581,6 +621,7 @@ public:
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     FunctionPointer set(std::string name, FunctionPointer value) {
         FunctionPointer res = nullptr;
         if (has(name)) {
@@ -589,6 +630,11 @@ public:
         FunctionPointer res = nullptr;
         if(has(name)){
 >>>>>>> basic functionality for context class
+=======
+    FunctionPointer set(std::string name, FunctionPointer value) {
+        FunctionPointer res = nullptr;
+        if (has(name)) {
+>>>>>>> feat: base for class Function
             res = functions[name];
         }
 
@@ -598,10 +644,14 @@ public:
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     Context *copy() {
 =======
     Context* copy(){
 >>>>>>> basic functionality for context class
+=======
+    Context *copy() {
+>>>>>>> feat: base for class Function
         auto newContext = new Context();
         // TODO will this make a copy?
         newContext->functions = functions;
