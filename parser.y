@@ -25,7 +25,7 @@
 %token <string> 	IDENTIFIER KEYWORD
 
 %token <token> 		INTEGER REAL BOOLEAN NIL
-%token END 			0
+%token END 		0
 
 %token <token> 		LPARENT
 %token <token> 		RPARENT
@@ -46,7 +46,7 @@ Program
 	;
 
 Elements
-	: 		   Element	{$$ = new Elements(); $$->push_back($1);}
+	: Element	        {$$ = new Elements(); $$->push_back($1);}
 	| Elements Element	{$1->push_back($2);}
 	;
 
@@ -68,7 +68,7 @@ Literal
 	;
 
 List
-	: LPARENT	 	 	       RPARENT {$$ = new List();}
+	: LPARENT	           RPARENT {$$ = new List();}
 	| LPARENT      	  Elements RPARENT {$$ = new List(*$2);}
 	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);}
 	;
