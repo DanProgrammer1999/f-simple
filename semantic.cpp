@@ -7,7 +7,7 @@ class Function;
 
 class Context;
 
-typedef Element* (*FunctionPointer)(Context *, List *);
+typedef Element* (*FunctionPointer)(Context *, Elements *);
 
 class DefaultFunctions {
 public:
@@ -29,22 +29,17 @@ public:
     }
 
 private:
-    static Element* quote(Context *context, List *args){
+    static Element* quote(Context *context, Elements *args){
         // Takes exactly one arg
-        if(args->list.size() > 1){
+        if(args->size() > 1){
             // args number mismatch exception
         }
         // Return the argument itself
-        return args->list.front();
+        return args->front();
     }
 
-    // example of execution
-    static Element* setq(Context *context, List *args) {
-        if (args->is_null) {
-            // nullptr exception
-        }
-
-        if(args->list.size() > 2){
+    static Element* setq(Context *context, Elements *args) {
+        if(args->size() > 2){
             // args number mismatch exception
         }
 
@@ -53,15 +48,17 @@ private:
         // evaluate args.get(1)
 
         // setq always returns null on success
-//        return null;
+        return new Nil();
     };
+
+    // TODO define other functions
 };
 
 class Context {
 private:
     Context() = default;
 
-    std::map<std::string, FunctionPointer *> *functions;
+    std::map<std::string, FunctionPointer> functions;
 
 public:
 
@@ -71,7 +68,7 @@ public:
         return res;
     }
 
-    const std::map<std::string, FunctionPointer *> *getFunctions() const {
+    const std::map<std::string, FunctionPointer> &getFunctions() const {
         return functions;
     }
 };
