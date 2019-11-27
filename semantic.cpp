@@ -51,6 +51,11 @@ private:
         return new Nil();
     };
 
+    // Takes three elements (Atom, List, Element): (name, args, body)
+    // store args and body, and add a name to the context
+    static Element* func(Context *context, Elements *args){
+
+    };
     // TODO define other functions
 };
 
@@ -70,5 +75,35 @@ public:
 
     const std::map<std::string, FunctionPointer> &getFunctions() const {
         return functions;
+    }
+
+    bool has(std::string name){
+        auto elem = functions.find(name);
+        return elem != functions.end();
+    }
+
+    FunctionPointer get(std::string name){
+        if(!this->has(name)){
+            return nullptr;
+        }
+        return functions[name];
+    }
+
+    FunctionPointer set(std::string name, FunctionPointer value){
+        FunctionPointer res = nullptr;
+        if(has(name)){
+            res = functions[name];
+        }
+
+        functions[name] = value;
+
+        return res;
+    }
+
+    Context* copy(){
+        auto newContext = new Context();
+        // TODO will this make a copy?
+        newContext->functions = functions;
+        return newContext;
     }
 };
