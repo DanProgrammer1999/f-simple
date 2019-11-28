@@ -59,44 +59,64 @@ private:
     // TODO define other functions
 };
 
-// This class should be instantiated for predefined functions only
 class Function : public Element {
-private:
-    std::string name{"__lambda__"};
+protected:
+    std::string name{};
     std::vector<std::string> *args;
     int args_number;
-    FunctionPointer handler{};
-    Context *context;
-
     bool lambda{false};
 
-public:
-    Function(std::string name, std::vector<std::string> *args,
-             Context *context, FunctionPointer handler = nullptr) :
-            name(name), args(args), args_number(args->size()), handler(handler), context(context) {};
+    Function(std::string name, std::vector<std::string> *args) :
+            name(name), args(args), args_number(args->size()) {};
 
     // Context here so that predefined functions can access it
-    Element *eval(Context* currContext, List *args) {
-        return this->handler(this->context, args);
+    virtual Element *eval(Context *currContext, List *args) {
+        return nullptr;
+    };
+
+    bool validate_args_number(int given_number) {
+        return given_number == this->args_number;
     }
 
-    // # TODO maybe?
-    void print() override {}
+    // # TODO write print method
+    void print() override {
+    }
+};
+
+
+// This class should be instantiated for predefined functions only
+class PredefinedFunction : public Function {
+private:
+    FunctionPointer handler{};
+
+public:
+    PredefinedFunction(std::string name, std::vector<std::string> *args, Context *context, FunctionPointer handler) :
+            Function(name, args), handler(handler) {};
+
+    Element *eval(Context *currContext, List *args) override {
+        return this->handler(currContext, args);
+    }
 };
 
 class CustomFunction : public Function {
-private:
+protected:
     std::vector<Element *> *body;
+    Context *localContext;
 public:
     CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
-                   Context *currContext) : Function(name, args, currContext) {};
+                   Context *localContext) : Function(name, args), body(body), localContext(localContext) {};
 
-    Element *eval(Context *context, List *args) {
+    Element *eval(Context *currContext, List *args) override {
 
-        // Context MUSTN'T be used here, for uniformity
-
-        // if body is literal, simply return its value
+        // Context MUST NOT be used here, need it because of override
+        // TODO implement this (using predefined eval probably)
+        this->localContext.get()
     }
+};
+
+class LambdaFunction : public CustomFunction {
+    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext):
+                CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
 };
 
 class Context {
