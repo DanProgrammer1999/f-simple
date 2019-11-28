@@ -31,6 +31,10 @@ protected:
 
 public:
     virtual void print() {}
+    ExecutionType getExecType()
+    {
+        return execType;
+    }
 };
 
 class Program
@@ -97,9 +101,13 @@ public:
     }
 };
 
-// TODO: should we add execType here?
 class Literal : public Element
 {
+public:
+    Literal()
+    {
+        execType = typeLiteral;
+    }
 };
 
 class Integer : public Literal
@@ -173,8 +181,11 @@ public:
 
 class Nil : public Literal
 {
-    // TODO: should we add type here?
 public:
+    Nil()
+    {
+        execType = typeNil;
+    }
     void print() override
     {
         tabPadding++;
