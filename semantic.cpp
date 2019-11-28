@@ -59,31 +59,39 @@ private:
     // TODO define other functions
 };
 
+// This class should be instantiated for predefined functions only
 class Function : public Element {
 private:
-    std::string name{};
-    std::vector<std::string> *args{};
-    Element *body;
+    std::string name{"__lambda__"};
+    std::vector<std::string> *args;
+    int args_number;
+    FunctionPointer handler{};
+    Context *context;
+
+    bool lambda{false};
 
 public:
-    Function(Atom *name, List *args, Element *body): body(body) {
-        if(name != nullptr && !name->identifier.empty()){
-            this->name = name->identifier;
-        }
-        // else it is nullptr by default
+    Function(std::string name, std::vector<std::string> *args, FunctionPointer handler, Context *currContext) :
+            name(name), args(args), args_number(args->size()), handler(handler), context(currContext) {}
 
-        for(auto elem: args->elements) {
-            try {
-                Atom *arg = (Atom *) elem;
-                this->args->push_back(arg->identifier);
-            }
-            catch (std::exception &) {
-                // invalid element type exception, must be atom
-            }
-        }
+    Element *eval(List *args) {
+        return this->handler(this->context, args);
     }
 
-    Element eval(Context* context, List *args){
+    // # TODO maybe?
+    void print() override {}
+};
+
+class CustomFunction : public Function {
+private:
+    std::vector<Element *> *body;
+public:
+    CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
+                   Context *currContext) : Function(name, args, (CustomFunction::eval), currContext) {};
+
+    static Element* eval(Context* context, List *args) {
+        // Context MUSTN'T be used here, for uniformity
+
         // if body is literal, simply return its value
 
         // else if body is atom, try to look it up in context dict, and throw exception if does not exist
@@ -93,11 +101,7 @@ public:
 
         // if it's a list, create new context (copy), execute statements one by one, return result.
     }
-
-    // # TODO maybe?
-    void print() override {}
 };
-
 
 class Context {
 private:
