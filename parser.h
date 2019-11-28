@@ -6,11 +6,29 @@
 
 static int tabPadding = 0;
 
+enum ExecutionType
+{
+    typeElement,
+    typeAtom,
+    typeKeyword,
+    typeLiteral,
+    typeInteger,
+    typeReal,
+    typeBoolean,
+    typeNil,
+    typeList,
+    typePredefinedList
+}
+
 class Element;
 typedef std::vector<Element *> Elements;
 
 class Element
 {
+    // store execution type as enum
+protected:
+    ExecutionType execType;
+
 public:
     virtual void print() {}
 };
@@ -40,8 +58,15 @@ class Atom : public Element
 public:
     std::string identifier;
 
-    Atom() {}
-    Atom(std::string identifier) : identifier(identifier) {}
+    // in constructors add its type
+    Atom()
+    {
+        execType = typeAtom;
+    }
+    Atom(std::string identifier) : identifier(identifier)
+    {
+        execType = typeAtom;
+    }
 
     void print() override
     {
@@ -57,7 +82,10 @@ class Keyword : public Atom
 public:
     std::string identifier;
 
-    Keyword(std::string identifier) : identifier(identifier) {}
+    Keyword(std::string identifier) : identifier(identifier)
+    {
+        execType = typeKeyword;
+    }
 
     void print() override
     {
@@ -69,6 +97,7 @@ public:
     }
 };
 
+// TODO: should we add execType here?
 class Literal : public Element
 {
 };
@@ -78,8 +107,14 @@ class Integer : public Literal
 public:
     int value;
 
-    Integer() {}
-    Integer(int value) : value(value) {}
+    Integer()
+    {
+        execType = typeInteger;
+    }
+    Integer(int value) : value(value)
+    {
+        execType = typeInteger;
+    }
 
     void print() override
     {
@@ -95,8 +130,14 @@ class Real : public Literal
 public:
     double value;
 
-    Real() {}
-    Real(double value) : value(value) {}
+    Real()
+    {
+        execType = typeReal;
+    }
+    Real(double value) : value(value)
+    {
+        execType = typeReal;
+    }
 
     void print() override
     {
@@ -112,8 +153,14 @@ class Boolean : public Literal
 public:
     bool value;
 
-    Boolean() {}
-    Boolean(bool value) : value(value) {}
+    Boolean()
+    {
+        execType = typeBoolean;
+    }
+    Boolean(bool value) : value(value)
+    {
+        execType = typeBoolean;
+    }
 
     void print() override
     {
@@ -126,6 +173,7 @@ public:
 
 class Nil : public Literal
 {
+    // TODO: should we add type here?
 public:
     void print() override
     {
@@ -142,8 +190,14 @@ class List : public Element
 public:
     Elements elements;
 
-    List() {}
-    List(Elements elements) : elements(elements) {}
+    List()
+    {
+        execType = typeList;
+    }
+    List(Elements elements) : elements(elements)
+    {
+        execType = typeList;
+    }
 
     void print() override
     {
@@ -164,6 +218,7 @@ class PredefinedList : public List
 public:
     PredefinedList(Keyword *keyword, Elements elements)
     {
+        execType = typePredefinedList;
         elements.push_back(keyword);
         this->elements.insert(this->elements.end(), elements.begin(), elements.end());
     }

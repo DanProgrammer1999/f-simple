@@ -79,6 +79,6 @@ int main(int argc, char **argv)
 {
     yyparse();
     std::cout << root << std::endl;
-	root->print();
+	  root->print();
     return 0;
 }
