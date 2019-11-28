@@ -12,16 +12,53 @@ public:
     // quote setq func lambda prog cond while return break
     static std::map<std::string, FunctionPointer> getDefaultFunctions() {
         std::map<std::string, FunctionPointer> res;
+
+        // Special forms, keyword functions
         res["quote"] = quote;
         res["setq"] = setq;
         res["func"] = func;
+        res["lambda"] = lambda;
+        res["prog"] = prog;
+        res["cond"] = cond;
+        res["while"] = f_while;
+        res["return"] = f_return;
+        res["break"] = f_break;
+        
+        // Arithmetic functions
+        res["plus"] = plus;
+        res["minus"] = minus;
+        res["times"] = times;
+        res["divide"] = divide;
+        
+        // List operations
+        res["head"] = head;
+        res["tail"] = tail;
+        res["cons"] = cons;
 
-//        res["lambda"] = lambda;
-//        res["prog"] = prog;
-//        res["cond"] = cond;
-//        res["while"] = while;
+        // Comparisons
+        res["equal"] = equal;
+        res["nonequal"] = nonequal;
+        res["less"] = less;
+        res["lesseq"] = lesseq;
+        res["greater"] = greater;
+        res["greatereq"] = greatereq;
 
-        // return and break here?
+        // Predicates
+        res["isint"] = isint;
+        res["isreal"] = isreal;
+        res["isbool"] = isbool;
+        res["isnull"] = isnull;
+        res["isatom"] = isatom;
+        res["islist"] = islist;
+
+        // Logical operators
+        res["and"] = f_and;
+        res["or"] = f_or;
+        res["xor"] = f_xor;
+        res["not"] = f_not;
+
+        // Evaluator
+        res["eval"] = eval;
 
         return res;
     }
@@ -52,11 +89,189 @@ private:
     };
 
     // Takes three elements (Atom, List, Element): (name, args, body)
-    // store args and body, and add a name to the context
+    // Store args and body, and add a name to the context
     static Element *func(Context *context, List *args) {
-
+        // TODO
     };
-    // TODO define other functions
+
+    // Takes two elements (List, Element): (args, body)
+    // Store args and body, evaluate lambda function
+    static Element *lambda(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements (List, Element): (context, atoms)
+    // Sequentially evaluate atoms using given context
+    static Element *prog(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two (or three) elements: (condition, body1, body2)
+    // Conditional statement
+    static Element *cond(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements: (condition, body)
+    // Loop statement, calculate condition in loop, then execute body if true
+    static Element *f_while(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one element
+    // and returns it as the result of function (only used in functions)
+    static Element *f_return(Context *context, List *args) {
+        // TODO
+    };
+
+    // Do not has any arguments,
+    // Just interupts a loop
+    static Element *f_break(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two real or int elements,
+    // Returns their sum
+    static Element *plus(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two real or int elements,
+    // Returns their difference
+    static Element *minus(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two real or int elements,
+    // Returns their multiplication
+    static Element *times(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two real or int elements, 
+    // Returns their division
+    static Element *divide(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes list, returns its first element
+    static Element *head(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes list, returns itself without first element
+    static Element *tail(Context *context, List *args) {
+        // TODO
+    };
+
+    // First arg can be any type, second is a list,
+    // Returns list (second arg) with new first element - first arg
+    static Element *cons(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of same type of int, real or bool,
+    // Returns true if elements are equal, false otherwise
+    static Element *equal(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of same type of int, real or bool,
+    // Returns true if elements are not equal, false otherwise
+    static Element *nonequal(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of same type of int, real or bool,
+    // Returns true if first element is less than second, false otherwise
+    static Element *less(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of same type of int, real or bool,
+    // Returns true if first element is less or equal to second, false otherwise
+    static Element *lesseq(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of same type of int, real or bool,
+    // Returns true if first element is greater than second, false otherwise
+    static Element *greater(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of same type of int, real or bool,
+    // Returns true if first element is greater or equal to second, false otherwise
+    static Element *greatereq(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one argument, returns true if it is integer,
+    // Or false, otherwise
+    static Element *isint(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one argument, returns true if it is real,
+    // Or false, otherwise
+    static Element *isreal(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one argument, returns true if it is boolean,
+    // Or false, otherwise
+    static Element *isbool(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one argument, returns true if it is null,
+    // Or false, otherwise
+    static Element *isnull(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one argument, returns true if it is an atom,
+    // Or false, otherwise
+    static Element *isatom(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one argument, returns true if it is a list,
+    // Or false, otherwise
+    static Element *islist(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of type boolean,
+    // Returns result of logical and as boolean
+    static Element *f_and(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of type boolean,
+    // Returns result of logical or as boolean
+    static Element *f_or(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of type boolean,
+    // Returns result of logical xor as boolean
+    static Element *f_xor(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes two elements of type boolean,
+    // Returns result of logical negation as boolean
+    static Element *f_not(Context *context, List *args) {
+        // TODO
+    };
+
+    // Takes one element as argument,
+    // If it is list - return result of its evaluation
+    // Otherwise, just return 
+    static Element *eval(Context *context, List *args) {
+        // TODO
+    };
 };
 
 class Function : public Element {
