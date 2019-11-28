@@ -71,10 +71,12 @@ private:
     bool lambda{false};
 
 public:
-    Function(std::string name, std::vector<std::string> *args, FunctionPointer handler, Context *currContext) :
-            name(name), args(args), args_number(args->size()), handler(handler), context(currContext) {}
+    Function(std::string name, std::vector<std::string> *args,
+             Context *context, FunctionPointer handler = nullptr) :
+            name(name), args(args), args_number(args->size()), handler(handler), context(context) {};
 
-    Element *eval(List *args) {
+    // Context here so that predefined functions can access it
+    Element *eval(Context* currContext, List *args) {
         return this->handler(this->context, args);
     }
 
@@ -87,19 +89,13 @@ private:
     std::vector<Element *> *body;
 public:
     CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
-                   Context *currContext) : Function(name, args, (CustomFunction::eval), currContext) {};
+                   Context *currContext) : Function(name, args, currContext) {};
 
-    static Element* eval(Context* context, List *args) {
+    Element *eval(Context *context, List *args) {
+
         // Context MUSTN'T be used here, for uniformity
 
         // if body is literal, simply return its value
-
-        // else if body is atom, try to look it up in context dict, and throw exception if does not exist
-        // but not good approach, since should bind the function to value in context when declared, not when called,
-        // as context may change
-        // better resolve value of literal before creating a function
-
-        // if it's a list, create new context (copy), execute statements one by one, return result.
     }
 };
 
