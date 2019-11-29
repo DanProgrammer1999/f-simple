@@ -5,14 +5,17 @@
 
 class Context;
 
+<<<<<<< HEAD
 typedef Element *(*FunctionPointer)(Context *, List *);
+=======
+typedef Element *(*FunctionPointer)(Context *, Elements *);
+>>>>>>> 4e46db84dbb5faa5261e137937a416f2ade207a8
 
 class DefaultFunctions {
 public:
     // quote setq func lambda prog cond while return break
     static std::map<std::string, FunctionPointer> getDefaultFunctions() {
         std::map<std::string, FunctionPointer> res;
-
         // Special forms, keyword functions
         res["quote"] = quote;
         res["setq"] = setq;
@@ -86,9 +89,6 @@ private:
 
         // [TODO: Evaluation] Set value of second argument to the first one
 
-        // setq always returns null on success
-        return new Nil();
-    };
 
     // Takes three elements (Atom, List, Element): (name, args, body)
     // Store args and body, and add a name to the context
@@ -620,21 +620,9 @@ public:
         return functions[name];
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     FunctionPointer set(std::string name, FunctionPointer value) {
         FunctionPointer res = nullptr;
         if (has(name)) {
-=======
-    FunctionPointer set(std::string name, FunctionPointer value){
-        FunctionPointer res = nullptr;
-        if(has(name)){
->>>>>>> basic functionality for context class
-=======
-    FunctionPointer set(std::string name, FunctionPointer value) {
-        FunctionPointer res = nullptr;
-        if (has(name)) {
->>>>>>> feat: base for class Function
             res = functions[name];
         }
 
@@ -643,15 +631,7 @@ public:
         return res;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     Context *copy() {
-=======
-    Context* copy(){
->>>>>>> basic functionality for context class
-=======
-    Context *copy() {
->>>>>>> feat: base for class Function
         auto newContext = new Context();
         // TODO will this make a copy?
         newContext->functions = functions;
