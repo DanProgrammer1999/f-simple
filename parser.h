@@ -178,10 +178,6 @@ class Boolean : public Literal
 public:
     bool value;
 
-    Boolean()
-    {
-        execType = typeBoolean;
-    }
     Boolean(bool value) : value(value)
     {
         execType = typeBoolean;
@@ -198,10 +194,20 @@ public:
 
 class Nil : public Literal
 {
-public:
+private:
+    static Nil* object;
     Nil()
     {
         execType = typeNil;
+    }
+
+public:
+    static Nil* getNil(){
+        if(object == nullptr){
+            object = new Nil();
+        }
+
+        return object;
     }
     void print() override
     {

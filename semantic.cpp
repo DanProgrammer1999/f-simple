@@ -21,12 +21,14 @@ protected:
 
     void validate_args_number(int given_number) {
         if (given_number != this->args_number) {
-
+            throw new ArgNumberMismatchException(this->name, given_number, this->args_number)
         }
     }
 
     // # TODO write print method
     void print() override {
+        std::stringstream res;
+        res <<
     }
 };
 
@@ -40,10 +42,7 @@ public:
             Function(name, args), handler(handler) {};
 
     Element *eval(Context *currContext, List *args) override {
-        if (args->elements.size() != this->args_number) {
-            throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
-        }
-
+        validate_args_number(args->elements.size());
         return this->handler(currContext, args);
     }
 };
@@ -132,6 +131,11 @@ public:
         // Evaluator
         res["eval"] = new PredefinedFunction("eval", new std::vector<std::string>{"element"}, eval);
 
+        // Constants
+        res["nil"] = new PredefinedFunction("nil", new std::vector<std::string>{}, nil);
+        res["true"] = new PredefinedFunction("true", new std::vector<std::string>{}, f_true);
+        res["false"] = new PredefinedFunction("false", new std::vector<std::string>{}, f_false);
+
         return res;
     }
 
@@ -156,11 +160,11 @@ private:
     // Takes three elements (Atom, List, Element): (name, args, body)
     // Store args and body, and add a name to the context
     static Element *func(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom){
+        if (args->elements[0]->getExecType() != typeAtom) {
             throw new TypeMismatchException("func", toString(args->elements[0]->getExecType()), toString(typeAtom));
         }
 
-        if(args->elements[1]->getExecType() != typeList) {
+        if (args->elements[1]->getExecType() != typeList) {
 
         }
 
@@ -605,6 +609,18 @@ private:
         }
 
         // [TODO: Evaluation] 
+    }
+
+    static Element *nil(Context *context, List *args) {
+        return Nil::getNil();
+    }
+
+    static Element *f_true(Context *context, List *args) {
+        return new Boolean(true);
+    }
+
+    static Element *f_false(Context *context, List *args) {
+        return new Boolean(false);
     }
 };
 

@@ -9,6 +9,7 @@
 
 #include "parser.h"
 #include "errors.h"
+#include <sstream>
 
 class Context;
 typedef Element *(*FunctionPointer)(Context *, List *);
