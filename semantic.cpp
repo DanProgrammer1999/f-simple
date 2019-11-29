@@ -28,7 +28,7 @@ protected:
     // # TODO write print method
     void print() override {
         std::stringstream res;
-        res <<
+        res << "<Function " << this->name << "(" << this->args << ")";
     }
 };
 
@@ -608,7 +608,7 @@ private:
             throw new TypeMismatchException("eval", toString(args->elements[0]->getExecType()), toString(typeAtom));
         }
 
-        // [TODO: Evaluation] 
+        // [TODO: Evaluation]
     }
 
     static Element *nil(Context *context, List *args) {
@@ -668,7 +668,7 @@ public:
     Context *copy() {
         auto newContext = new Context();
         // TODO will this make a copy?
-        newContext->functions = functions;
+        newContext->functions = this->functions;
         return newContext;
     }
 };
