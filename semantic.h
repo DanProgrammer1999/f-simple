@@ -17,4 +17,6 @@ class PredefinedFunction;
 class CustomFunction;
 class LambdaFunciton;
 
+class DefaultFunctions;
+
 #endif //F_SIMPLE_SEMANTIC_H

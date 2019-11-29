@@ -6,6 +6,76 @@
 
 typedef Element *(*FunctionPointer)(Context *, List *);
 
+class Function : public Element {
+protected:
+    std::string name{};
+    std::vector<std::string> *args;
+    int args_number;
+    bool lambda{false};
+
+    Function(std::string name, std::vector<std::string> *args) :
+            name(name), args(args), args_number(args->size()) {};
+
+    // Context here so that predefined functions can access it
+    virtual Element *eval(Context *currContext, List *args) {
+        return nullptr;
+    };
+
+    void validate_args_number(int given_number) {
+        if(given_number != this->args_number){
+
+        }
+    }
+
+    // # TODO write print method
+    void print() override {
+    }
+};
+
+// This class should be instantiated for predefined functions only
+class PredefinedFunction : public Function {
+private:
+    FunctionPointer handler{};
+
+public:
+    PredefinedFunction(std::string name, std::vector<std::string> *args, FunctionPointer handler) :
+            Function(name, args), handler(handler) {};
+
+    Element *eval(Context *currContext, List *args) override {
+        if (args->elements.size() != this->args_number) {
+            // TODO Throw an exception 'Wrong number of arguments'
+        }
+
+        return this->handler(currContext, args);
+    }
+};
+
+class CustomFunction : public Function {
+protected:
+    std::vector<Element *> *body;
+    Context *localContext;
+public:
+    CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
+                   Context *localContext) : Function(name, args), body(body), localContext(localContext) {};
+
+    Element *eval(Context *currContext, List *args) override {
+        if (args->elements.size() != this->args_number) {
+            // TODO Throw an exception 'Wrong number of arguments'
+        }
+
+        // Context MUST NOT be used here, need it because of override
+        // TODO implement this (using predefined eval probably)
+        for(auto item : args->elements){
+
+        }
+    }
+};
+
+class LambdaFunction : public CustomFunction {
+    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext):
+            CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
+};
+
 class DefaultFunctions {
 public:
     // quote setq func lambda prog cond while return break
@@ -407,79 +477,6 @@ private:
     };
 };
 
-class Function : public Element {
-protected:
-    std::string name{};
-    std::vector<std::string> *args;
-    int args_number;
-    bool lambda{false};
-
-    Function(std::string name, std::vector<std::string> *args) :
-            name(name), args(args), args_number(args->size()) {};
-
-    // Context here so that predefined functions can access it
-    virtual Element *eval(Context *currContext, List *args) {
-        return nullptr;
-    };
-
-    void validate_args_number(int given_number) {
-        if(given_number != this->args_number){
-
-        }
-    }
-
-    // # TODO write print method
-    void print() override {
-    }
-};
-
-// This class should be instantiated for predefined functions only
-class PredefinedFunction : public Function {
-private:
-    FunctionPointer handler{};
-
-public:
-    PredefinedFunction(std::string name, std::vector<std::string> *args, FunctionPointer handler) :
-            Function(name, args), handler(handler) {};
-
-    Element *eval(Context *currContext, List *args) override {
-        if (args->elements.size() != this->args_number) {
-            // TODO Throw an exception 'Wrong number of arguments'
-        }
-
-        return this->handler(currContext, args);
-    }
-};
-
-class CustomFunction : public Function {
-protected:
-    std::vector<Element *> *body;
-    Context *localContext;
-public:
-    CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
-                   Context *localContext) : Function(name, args), body(body), localContext(localContext) {};
-
-    Element *eval(Context *currContext, List *args) override {
-        if (args->elements.size() != this->args_number) {
-            // TODO Throw an exception 'Wrong number of arguments'
-        }
-
-        // Context MUST NOT be used here, need it because of override
-        // TODO implement this (using predefined eval probably)
-        for(auto item : args->elements){
-
-        }
-    }
-
-        this->localContext.get()
-    }
-};
-
-class LambdaFunction : public CustomFunction {
-    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext):
-                CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
-};
-
 class Context {
 private:
     Context() = default;
@@ -528,3 +525,5 @@ public:
         return newContext;
     }
 };
+
+
