@@ -47,7 +47,6 @@ public:
 
     Context *copy() {
         auto newContext = new Context();
-        // TODO will this make a copy?
         newContext->functions = this->functions;
         return newContext;
     }

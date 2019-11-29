@@ -1,3 +1,6 @@
+#ifndef F_SIMPLE_PARSER_H
+#define F_SIMPLE_PARSER_H
+
 #include <list>
 #include <vector>
 #include <string>
@@ -96,16 +99,23 @@ public:
                   << " ATOM->" << identifier << std::endl;
         tabPadding--;
     }
+
+    static Atom *fromElement(Element *element){
+        if(element->getExecType() != typeAtom){
+            return nullptr;
+        }
+
+        return static_cast<Atom *>(element);
+    }
 };
 
 class Keyword : public Atom
 {
 public:
-    std::string identifier;
 
-    Keyword(std::string identifier) : identifier(identifier)
+    Keyword(std::string identifier) : Atom(identifier)
     {
-        execType = typeKeyword;
+        execType = typeAtom;
     }
 
     void print() override
@@ -124,6 +134,14 @@ public:
     Literal()
     {
         execType = typeLiteral;
+    }
+
+    static Literal *fromElement(Element *element){
+        if(element->getExecType() != typeLiteral){
+            return nullptr;
+        }
+
+        return static_cast<Literal *>(element);
     }
 };
 
@@ -245,6 +263,14 @@ public:
         }
         tabPadding--;
     }
+
+    static List *fromElement(Element *element){
+        if(element->getExecType() != typeList){
+            return nullptr;
+        }
+
+        return static_cast<List *>(element);
+    }
 };
 
 class PredefinedList : public List
@@ -252,7 +278,7 @@ class PredefinedList : public List
 public:
     PredefinedList(Keyword *keyword, Elements elements)
     {
-        execType = typePredefinedList;
+        execType = typeList;
         elements.push_back(keyword);
         this->elements.insert(this->elements.end(), elements.begin(), elements.end());
     }
@@ -270,3 +296,5 @@ public:
         tabPadding--;
     }
 };
+
+#endif //F_SIMPLE_PARSER_H

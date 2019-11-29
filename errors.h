@@ -48,8 +48,6 @@ public:
 };
 
 class TypeMismatchException : public SemanticException {
-private:
-    std::string message;
 public:
     TypeMismatchException(std::string function_name, std::string received, std::string required) :
             SemanticException(build_message(function_name, received, required)) {};
@@ -58,6 +56,19 @@ public:
         std::stringstream message_stream;
         message_stream << "Incorrect number of arguments received in function " << function_name << "\n";
         message_stream << "Received type " << received << ", but type " << required << " is expected" << std::endl;
+
+        return message_stream.str();
+    }
+};
+
+class NoSuchFunctionException : SemanticException {
+    NoSuchFunctionException(std::string function_name, std::string name_received) :
+    SemanticException(build_message(function_name, name_received)) {};
+
+    static std::string build_message(std::string function_name, std::string name_received) {
+        std::stringstream message_stream;
+        message_stream << "Atom \"" << name_received << "\" specified in function " << function_name;
+        message_stream << "could not be resolved." << std::endl;
 
         return message_stream.str();
     }

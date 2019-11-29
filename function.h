@@ -71,7 +71,9 @@ public:
 
         // Context MUST NOT be used here, need it because of override
         for (auto item : args->elements) {
-            // TODO implement this (using predefined eval probably)
+            if(item->getExecType() == typeAtom){
+                if(currContext->has(Atom::fromElement(item)->identifier)
+            }
         }
     }
 };
