@@ -4,16 +4,20 @@
 #include "errors.cpp"
 
 class Context;
+class PredefinedFunction;
+class CustomFunction;
+class Lambda Function;
 
 typedef Element *(*FunctionPointer)(Context *, List *);
 
 class DefaultFunctions {
 public:
     // quote setq func lambda prog cond while return break
-    static std::map<std::string,> getDefaultFunctions() {
+    static std::map<std::string, PredefinedFunction *> getDefaultFunctions() {
         std::map<std::string, FunctionPointer> res;
+        Context
         // Special forms, keyword functions
-        res["quote"] = quote;
+        res["quote"] = new PredefinedFunction("quote", new std::vector<std::string>{"element"}, quote);
         res["setq"] = setq;
         res["func"] = func;
         res["lambda"] = lambda;
@@ -517,7 +521,7 @@ private:
     FunctionPointer handler{};
 
 public:
-    PredefinedFunction(std::string name, std::vector<std::string> *args, Context *context, FunctionPointer handler) :
+    PredefinedFunction(std::string name, std::vector<std::string> *args, FunctionPointer handler) :
             Function(name, args), handler(handler) {};
 
     Element *eval(Context *currContext, List *args) override {
