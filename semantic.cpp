@@ -470,7 +470,7 @@ private:
     // Otherwise, just return 
     static Element *eval(Context *context, List *args) {
         if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
+            throw new TypeMismatchException("eval", toString(args->elements[0]->getExecType()), toString(typeAtom));
         }
 
         // [TODO: Evaluation]

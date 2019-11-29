@@ -20,6 +20,23 @@ enum ExecutionType
     typePredefinedList
 };
 
+const std::string toString(ExecutionType type) {
+    switch (type) {
+        typeElement: return "Element";
+        typeAtom: return "Atom";
+        typeKeyword: return "Keyword";
+        typeLiteral: return "Literal";
+        typeInteger: return "Integer";
+        typeReal: return "Real";
+        typeBoolean: return "Boolean";
+        typeNil: return "Nil";
+        typeList: return "List";
+        typePredefinedList: return "List";
+        default:
+            return "UNKNOWN TYPE";
+    }
+}
+
 class Element;
 typedef std::vector<Element *> Elements;
 

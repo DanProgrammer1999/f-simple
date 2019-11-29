@@ -1,8 +1,13 @@
 #include "errors.h"
 
-class ArgNumberMismatchException : public std::exception {
-private:
+class SemanticException : public std::exception{
+protected:
     std::string message;
+    SemanticException(std::string message): message(message){};
+};
+
+class ArgNumberMismatchException : public SemanticException{
+
 public:
     ArgNumberMismatchException(std::string function_name, int received, int required) :
             message(build_message(function_name, received, required)) {};
