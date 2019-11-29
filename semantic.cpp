@@ -41,7 +41,7 @@ public:
 
     Element *eval(Context *currContext, List *args) override {
         if (args->elements.size() != this->args_number) {
-            // TODO Throw an exception 'Wrong number of arguments'
+            throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
         }
 
         return this->handler(currContext, args);
@@ -579,7 +579,7 @@ private:
     // Otherwise, just return 
     static Element *eval(Context *context, List *args) {
         if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
+            throw new TypeMismatchException("eval", toString(args->elements[0]->getExecType()), toString(typeAtom));
         }
 
         // [TODO: Evaluation] 
