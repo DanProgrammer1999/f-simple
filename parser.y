@@ -4,10 +4,11 @@
 	#include <string>
 
 	Program* root;
+	bool no_err = true;
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
-	void yyerror(const char* s) { printf("ERROR: %sn", s); }
+	void yyerror(const char* s) { printf("ERROR: %sn", s); no_err = false; }
 %}
 
 %union {
@@ -42,7 +43,7 @@
 %%
 
 Program
-	: Elements END {root = new Program(*$1);}
+	: Elements END {root = new Program(*$1); root->print();}
 	;
 
 Elements
@@ -68,17 +69,21 @@ Literal
 	;
 
 List
-	: LPARENT	           RPARENT {$$ = new List();}
-	| LPARENT      	  Elements RPARENT {$$ = new List(*$2);}
-	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);}
+	: LPARENT	           RPARENT {$$ = new List(); $$->print();}
+	| LPARENT      	  Elements RPARENT {$$ = new List(*$2); $$->print();}
+	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3); $$->print();}
 	;
 
 %%
 
 int main(int argc, char **argv)
 {
-    yyparse();
-    std::cout << root << std::endl;
-	  root->print();
+	yyparse();
+	if (!no_err) {
+		return -1;
+	}
+
+	std::cout << root << std::endl;
+    
     return 0;
 }

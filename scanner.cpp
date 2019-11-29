@@ -470,6 +470,7 @@ int yylex()
 
     if (token.type() == Token::Type::EndOfCode)
     {
+        clearerr(stdin);
         return -1;
     }
 
