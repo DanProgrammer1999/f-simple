@@ -41,7 +41,7 @@ public:
 
     Element *eval(Context *currContext, List *args) override {
         if (args->elements.size() != this->args_number) {
-            // TODO Throw an exception 'Wrong number of arguments'
+            throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
         }
 
         return this->handler(currContext, args);
@@ -473,7 +473,7 @@ private:
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
+        // [TODO: Evaluation]
     };
 };
 
