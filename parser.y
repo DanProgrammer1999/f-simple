@@ -15,6 +15,10 @@
 	int token;
 	std::string *string;
 
+	double real;
+	bool boolean;
+	int integer;
+
 	Program* program;
 	Element* element;
 	Literal* literal;
@@ -63,8 +67,8 @@ Atom
 
 Literal
 	: INTEGER	{$$ = new Integer($1);}
-	| REAL		{$$ = new Real($1);}
-	| BOOLEAN	{$$ = new Boolean($1);}
+	| REAL		{$$ = new Real(yylval.real);}
+	| BOOLEAN	{$$ = new Boolean(yylval.boolean);}
 	| NIL		{$$ = new Nil();}
 	;
 

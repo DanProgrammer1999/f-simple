@@ -301,7 +301,7 @@ Token Lexer::next()
         Token isComment = slash_comment();
         if (isComment.is_not(Token::Type::Slash))
         {
-            return isComment;
+            return this->next();
         }
     }
     default:
@@ -360,16 +360,18 @@ Token Lexer::number()
         start += peek();
         if (is_number(get()))
         {
+            start += peek();
             while (is_number(get()))
             {
                 start += peek();
             }
-
+            reset();
             return Token(Token::Type::Real, start);
         }
         else
         {
             reset();
+            return atom(Token::Type::WhatIsThatRyadovoyKucha);
         }
     }
     reset();
@@ -389,6 +391,7 @@ Token Lexer::number(std::string start)
         start += peek();
         if (is_number(get()))
         {
+            start += peek();
             while (is_number(get()))
             {
                 start += peek();
@@ -399,6 +402,7 @@ Token Lexer::number(std::string start)
         else
         {
             reset();
+            return atom(Token::Type::WhatIsThatRyadovoyKucha);
         }
     }
     reset();
@@ -481,6 +485,19 @@ int yylex()
     else
     {
         yylval.token = mapToCode(token.type());
+        switch (token.type())
+        {
+        case Token::Type::Integer:
+            yylval.integer = std::stoi(token.lexeme());
+            break;
+        case Token::Type::Real:
+            yylval.real = std::stod(token.lexeme());
+            break;
+        case Token::Type::Boolean:
+            yylval.boolean = token.lexeme() == "true" ? true : false;
+        default:
+            break;
+        }
     }
 
     return mapToCode(token.type());
