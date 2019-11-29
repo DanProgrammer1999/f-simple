@@ -1,56 +1,250 @@
-#ifndef F_SIMPLE_PARSER_H
-#define F_SIMPLE_PARSER_H
 
 #include <list>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <iomanip>
 
-struct Literal {
-    int *integer_value;
-    bool *boolean_value;
-    double *real_value;
+static int tabPadding = 0;
 
-    Literal(int *integer_value, bool *boolean_value, double *real_value) :
-            integer_value(integer_value), boolean_value(boolean_value), real_value(real_value) {};
+enum ExecutionType
+{
+    typeElement,
+    typeAtom,
+    typeKeyword,
+    typeLiteral,
+    typeInteger,
+    typeReal,
+    typeBoolean,
+    typeNil,
+    typeList,
+    typePredefinedList
+}
+
+class Element;
+typedef std::vector<Element *> Elements;
+
+class Element
+{
+    // store execution type as enum
+protected:
+    ExecutionType execType;
+
+public:
+    virtual void print() {}
+    ExecutionType getExecType()
+    {
+        return execType;
+    }
 };
 
-struct Atom {
-    char *identifier{};
-    bool is_keyword = false;
-    Literal *literal{};
+class Program
+{
+public:
+    Elements elements;
 
-    Atom(char *identifier, bool is_keyword) :
-            identifier(identifier), is_keyword(is_keyword) {};
+    Program() {}
+    Program(Elements elements) : elements(elements) {}
 
-    explicit Atom(Literal *literal):
-        literal(literal){};
-};
-
-struct Element;
-
-struct List {
-    std::list<Element *> list;
-    bool is_null = false;
-
-    explicit List(Element *element) {
-        if (element != nullptr) {
-            list.push_back(element);
-        } else {
-            is_null = true;
+    void print()
+    {
+        std::cout << "Printing Program items with size " << elements.size() << std::endl;
+        tabPadding++;
+        for (int i = 0; i < elements.size(); ++i)
+        {
+            elements.at(i)->print();
         }
-    }
-
-    void addElement(Element *element) {
-        list.push_back(element);
+        tabPadding--;
     }
 };
 
-const List null = List(nullptr);
+class Atom : public Element
+{
+public:
+    std::string identifier;
 
-struct Element {
-    Atom *atom;
-    List *list;
+    // in constructors add its type
+    Atom()
+    {
+        execType = typeAtom;
+    }
+    Atom(std::string identifier) : identifier(identifier)
+    {
+        execType = typeAtom;
+    }
 
-    explicit Element(Atom *atom, List *list) :
-            atom(atom), list(list) {};
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6) << "|---"
+                  << " ATOM->" << identifier << std::endl;
+        tabPadding--;
+    }
 };
 
-#endif //F_SIMPLE_PARSER_H
+class Keyword : public Atom
+{
+public:
+    std::string identifier;
+
+    Keyword(std::string identifier) : identifier(identifier)
+    {
+        execType = typeKeyword;
+    }
+
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6);
+        std::cout << "|---"
+                  << " KEYWORD->" << identifier << std::endl;
+        tabPadding--;
+    }
+};
+
+class Literal : public Element
+{
+public:
+    Literal()
+    {
+        execType = typeLiteral;
+    }
+};
+
+class Integer : public Literal
+{
+public:
+    int value;
+
+    Integer()
+    {
+        execType = typeInteger;
+    }
+    Integer(int value) : value(value)
+    {
+        execType = typeInteger;
+    }
+
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6) << "|---"
+                  << " INTEGER->" << value << std::endl;
+        tabPadding--;
+    }
+};
+
+class Real : public Literal
+{
+public:
+    double value;
+
+    Real()
+    {
+        execType = typeReal;
+    }
+    Real(double value) : value(value)
+    {
+        execType = typeReal;
+    }
+
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6) << "|---"
+                  << " REAL->" << value << std::endl;
+        tabPadding--;
+    }
+};
+
+class Boolean : public Literal
+{
+public:
+    bool value;
+
+    Boolean()
+    {
+        execType = typeBoolean;
+    }
+    Boolean(bool value) : value(value)
+    {
+        execType = typeBoolean;
+    }
+
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6) << "|---"
+                  << " BOOL->" << value << std::endl;
+        tabPadding--;
+    }
+};
+
+class Nil : public Literal
+{
+public:
+    Nil()
+    {
+        execType = typeNil;
+    }
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6);
+        std::cout << "|---"
+                  << " NULL" << std::endl;
+        tabPadding--;
+    }
+};
+
+class List : public Element
+{
+public:
+    Elements elements;
+
+    List()
+    {
+        execType = typeList;
+    }
+    List(Elements elements) : elements(elements)
+    {
+        execType = typeList;
+    }
+
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6);
+        std::cout << "|---"
+                  << " Printing list items with size " << elements.size() << std::endl;
+        for (int i = 0; i < elements.size(); ++i)
+        {
+            elements.at(i)->print();
+        }
+        tabPadding--;
+    }
+};
+
+class PredefinedList : public List
+{
+public:
+    PredefinedList(Keyword *keyword, Elements elements)
+    {
+        execType = typePredefinedList;
+        elements.push_back(keyword);
+        this->elements.insert(this->elements.end(), elements.begin(), elements.end());
+    }
+
+    void print() override
+    {
+        tabPadding++;
+        std::cout << std::setw(tabPadding * 6);
+        std::cout << "|---"
+                  << " Printing predefined list items with size " << elements.size() << std::endl;
+        for (int i = 0; i < elements.size(); ++i)
+        {
+            elements.at(i)->print();
+        }
+        tabPadding--;
+    }
+};
