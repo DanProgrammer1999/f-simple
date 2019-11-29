@@ -5,11 +5,7 @@
 
 class Context;
 
-<<<<<<< HEAD
 typedef Element *(*FunctionPointer)(Context *, List *);
-=======
-typedef Element *(*FunctionPointer)(Context *, Elements *);
->>>>>>> 4e46db84dbb5faa5261e137937a416f2ade207a8
 
 class DefaultFunctions {
 public:
