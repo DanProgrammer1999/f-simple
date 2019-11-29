@@ -7,7 +7,7 @@ class Function;
 
 class Context;
 
-typedef Element* (*FunctionPointer)(Context *, Elements *);
+typedef Element *(*FunctionPointer)(Context *, Elements *);
 
 class DefaultFunctions {
 public:
@@ -29,17 +29,17 @@ public:
     }
 
 private:
-    static Element* quote(Context *context, Elements *args){
+    static Element *quote(Context *context, Elements *args) {
         // Takes exactly one arg
-        if(args->size() > 1){
+        if (args->size() > 1) {
             // args number mismatch exception
         }
         // Return the argument itself
         return args->front();
     }
 
-    static Element* setq(Context *context, Elements *args) {
-        if(args->size() > 2){
+    static Element *setq(Context *context, Elements *args) {
+        if (args->size() > 2) {
             // args number mismatch exception
         }
 
