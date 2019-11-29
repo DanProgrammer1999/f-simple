@@ -14,8 +14,7 @@ class DefaultFunctions {
 public:
     // quote setq func lambda prog cond while return break
     static std::map<std::string, PredefinedFunction *> getDefaultFunctions() {
-        std::map<std::string, FunctionPointer> res;
-        Context
+        std::map<std::string, PredefinedFunction *> res;
         // Special forms, keyword functions
         res["quote"] = new PredefinedFunction("quote", new std::vector<std::string>{"element"}, quote);
         res["setq"] = setq;
@@ -555,7 +554,7 @@ class Context {
 private:
     Context() = default;
 
-    std::map<std::string, FunctionPointer> functions;
+    std::map<std::string, Function> functions;
 
 public:
 
