@@ -11,6 +11,7 @@
 #include "errors.h"
 
 class Context;
+typedef Element *(*FunctionPointer)(Context *, List *);
 
 class Function;
 class PredefinedFunction;

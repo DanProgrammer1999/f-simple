@@ -4,8 +4,6 @@
 #include "parser.h"
 #include "errors.h"
 
-typedef Element *(*FunctionPointer)(Context *, List *);
-
 class Function : public Element {
 protected:
     std::string name{};
