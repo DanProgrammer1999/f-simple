@@ -504,15 +504,16 @@ protected:
         return nullptr;
     };
 
-    bool validate_args_number(int given_number) {
-        return given_number == this->args_number;
+    void validate_args_number(int given_number) {
+        if(given_number != this->args_number){
+            
+        }
     }
 
     // # TODO write print method
     void print() override {
     }
 };
-
 
 // This class should be instantiated for predefined functions only
 class PredefinedFunction : public Function {
@@ -548,7 +549,6 @@ class LambdaFunction : public CustomFunction {
     LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext):
                 CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
 };
-
 
 class Context {
 private:
