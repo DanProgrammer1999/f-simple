@@ -9,5 +9,6 @@
 class SemanticException;
 class ArgNumberMismatchException;
 class TypeMismatchException;
+class CustomException;
 
 #endif //F_SIMPLE_ERRORS_H

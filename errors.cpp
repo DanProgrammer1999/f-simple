@@ -1,20 +1,34 @@
 #include "errors.h"
 
-class SemanticException : public std::exception{
+class SemanticException : public std::exception {
 protected:
     std::string message;
-    SemanticException(std::string message): message(message){};
-};
-
-class ArgNumberMismatchException : public SemanticException{
-
 public:
-    ArgNumberMismatchException(std::string function_name, int received, int required) :
-            message(build_message(function_name, received, required)) {};
+    SemanticException(std::string message) : message(message) {};
 
     const char *what() const throw() override {
         return this->message.c_str();
     }
+};
+
+class CustomException : SemanticException {
+    CustomException(std::string function_name, std::string custom_message) :
+            SemanticException(build_message(function_name, custom_message)) {};
+
+    static std::string build_message(std::string function_name, std::string custom_message) {
+        std::stringstream message_stream;
+        message_stream << "Exception in function " << function_name << "\n";
+        message_stream << custom_message << std::endl;
+
+        return message_stream.str();
+    }
+};
+
+class ArgNumberMismatchException : public SemanticException {
+
+public:
+    ArgNumberMismatchException(std::string function_name, int received, int required) :
+            SemanticException(build_message(function_name, received, required)) {};
 
     static std::string build_message(std::string function_name, int received, int required) {
         std::stringstream message_stream;
@@ -26,16 +40,12 @@ public:
     }
 };
 
-class TypeMismatchException : public std::exception {
+class TypeMismatchException : public SemanticException {
 private:
     std::string message;
 public:
     TypeMismatchException(std::string function_name, std::string received, std::string required) :
-            message(build_message(function_name, received, required)) {};
-
-    const char *what() const throw() override {
-        return this->message.c_str();
-    }
+            SemanticException(build_message(function_name, received, required)) {};
 
     static std::string build_message(std::string function_name, std::string received, std::string required) {
         std::stringstream message_stream;
