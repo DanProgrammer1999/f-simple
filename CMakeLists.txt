@@ -4,5 +4,5 @@ project(f-simple)
 set(CMAKE_CXX_STANDARD 14)
 
 file(GLOB_RECURSE SOURCE_FILES "./*.cpp" "./*.c" "./generated/*.c" "./generated/*.cc")
-add_executable(ansi_c ${SOURCE_FILES} function.h predefined_functions.cpp predefined_functions.h context.h context.cpp)
+add_executable(ansi_c ${SOURCE_FILES} function.h predefined_functions.cpp predefined_functions.h context.h context.cpp function.cpp)
 target_link_libraries(ansi_c "stdc++")

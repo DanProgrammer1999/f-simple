@@ -35,7 +35,7 @@ public:
     }
 
     Function *set(std::string name, Function *value) {
-        Function *res = nullptr;
+        Function *res = Nil::getNil();
         if (has(name)) {
             res = functions[name];
         }

@@ -79,6 +79,7 @@ public:
 };
 
 class LambdaFunction : public CustomFunction {
+public:
     LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext) :
             CustomFunction("<lambda_func>", args, body, localContext) {
         this->lambda = true;
