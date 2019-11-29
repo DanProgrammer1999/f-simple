@@ -271,8 +271,10 @@ public:
     {
         execType = typeList;
     }
-    List(Elements *elements) : elements(*elements)
+
+    List(Element *element)
     {
+        elements = *(new Elements{element});
         execType = typeList;
     }
 
