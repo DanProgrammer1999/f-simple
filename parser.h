@@ -20,7 +20,8 @@ enum ExecutionType
     typeBoolean,
     typeNil,
     typeList,
-    typePredefinedList
+    typePredefinedList,
+    typeFunction,
 };
 
 const std::string toString(ExecutionType type) {
@@ -166,6 +167,14 @@ public:
                   << " INTEGER->" << value << std::endl;
         tabPadding--;
     }
+
+    static Integer *fromElement(Element *element){
+        if(element->getExecType() != typeInteger){
+            return nullptr;
+        }
+
+        return static_cast<Integer *>(element);
+    }
 };
 
 class Real : public Literal
@@ -189,6 +198,14 @@ public:
                   << " REAL->" << value << std::endl;
         tabPadding--;
     }
+
+    static Real *fromElement(Element *element){
+        if(element->getExecType() != typeReal){
+            return nullptr;
+        }
+
+        return static_cast<Real *>(element);
+    }
 };
 
 class Boolean : public Literal
@@ -207,6 +224,14 @@ public:
         std::cout << std::setw(tabPadding * 6) << "|---"
                   << " BOOL->" << value << std::endl;
         tabPadding--;
+    }
+
+    static Boolean *fromElement(Element *element){
+        if(element->getExecType() != typeInteger){
+            return nullptr;
+        }
+
+        return static_cast<Boolean *>(element);
     }
 };
 
@@ -296,5 +321,9 @@ public:
         tabPadding--;
     }
 };
+
+Integer *toInteger(Element *element);
+Real *toReal(Element *element);
+Boolean *toBool(Element *element);
 
 #endif //F_SIMPLE_PARSER_H

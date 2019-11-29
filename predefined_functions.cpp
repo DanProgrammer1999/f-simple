@@ -82,7 +82,21 @@ Element *prog(Context *context, List *args) {
 // Conditional statement
 Element *cond(Context *context, List *args) {
     Element *a = eval(context, new List(new Elements{args->elements[0]}));
-    
+    Boolean *cond_obj = toBool(a);
+    if(cond_obj == nullptr){
+        throw TypeMismatchException("cond", toString(a->getExecType()), toString(typeBoolean));
+    }
+
+    bool condition = cond_obj->value;
+    Element *res = Nil::getNil();
+    if(condition){
+        res = eval(context, new List(new Elements{args->elements[1]}));
+    }
+    else{
+        res = eval(context, new List(new Elements{args->elements[2]}));
+    }
+
+    return res;
 }
 
 // Takes two elements: (condition, body)
