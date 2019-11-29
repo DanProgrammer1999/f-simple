@@ -1,7 +1,7 @@
 #include <map>
 
 #include "parser.h"
-#include "errors.cpp"
+#include "errors.h"
 
 class Context;
 class PredefinedFunction;
@@ -506,7 +506,7 @@ protected:
 
     void validate_args_number(int given_number) {
         if(given_number != this->args_number){
-            
+
         }
     }
 
