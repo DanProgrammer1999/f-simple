@@ -20,7 +20,7 @@ protected:
     };
 
     void validate_args_number(int given_number) {
-        if(given_number != this->args_number){
+        if (given_number != this->args_number) {
 
         }
     }
@@ -63,39 +63,42 @@ public:
 
         // Context MUST NOT be used here, need it because of override
         // TODO implement this (using predefined eval probably)
-        for(auto item : args->elements){
+        for (auto item : args->elements) {
 
         }
     }
 };
 
 class LambdaFunction : public CustomFunction {
-    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext):
-            CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
+    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext) :
+            CustomFunction("<lambda_func>", args, body, localContext) {
+        this->lambda = true;
+    };
 };
 
 class DefaultFunctions {
 public:
     // quote setq func lambda prog cond while return break
-    static std::map<std::string, PredefinedFunction *> getDefaultFunctions() {
-        std::map<std::string, PredefinedFunction *> res;
+    static std::map<std::string, Function *> getDefaultFunctions() {
+        std::map<std::string, Function *> res;
         // Special forms, keyword functions
         res["quote"] = new PredefinedFunction("quote", new std::vector<std::string>{"element"}, quote);
         res["setq"] = new PredefinedFunction("setq", new std::vector<std::string>{"atom", "element"}, setq);
         res["func"] = new PredefinedFunction("func", new std::vector<std::string>{"atom", "list", "element"}, func);
         res["lambda"] = new PredefinedFunction("lambda", new std::vector<std::string>{"list", "element"}, lambda);
         res["prog"] = new PredefinedFunction("prog", new std::vector<std::string>{"list", "element"}, prog);
-        res["cond"] = new PredefinedFunction("cond", new std::vector<std::string>{"if-cond", "then-body", "else-body"}, cond);
+        res["cond"] = new PredefinedFunction("cond", new std::vector<std::string>{"if-cond", "then-body", "else-body"},
+                                             cond);
         res["while"] = new PredefinedFunction("while", new std::vector<std::string>{"loop-cond", "body"}, f_while);
         res["return"] = new PredefinedFunction("return", new std::vector<std::string>{"element"}, f_return);
         res["break"] = new PredefinedFunction("break", new std::vector<std::string>{}, f_break);
-        
+
         // Arithmetic functions
         res["plus"] = new PredefinedFunction("plus", new std::vector<std::string>{"element1", "element2"}, plus);
         res["minus"] = new PredefinedFunction("minus", new std::vector<std::string>{"element1", "element2"}, minus);
         res["times"] = new PredefinedFunction("times", new std::vector<std::string>{"element1", "element2"}, times);
         res["divide"] = new PredefinedFunction("divide", new std::vector<std::string>{"element1", "element2"}, divide);
-        
+
         // List operations
         res["head"] = new PredefinedFunction("head", new std::vector<std::string>{"element"}, head);
         res["tail"] = new PredefinedFunction("tail", new std::vector<std::string>{"element"}, tail);
@@ -103,11 +106,14 @@ public:
 
         // Comparisons
         res["equal"] = new PredefinedFunction("equal", new std::vector<std::string>{"element1", "element2"}, equal);
-        res["nonequal"] = new PredefinedFunction("nonequal", new std::vector<std::string>{"element1", "element2"}, nonequal);
+        res["nonequal"] = new PredefinedFunction("nonequal", new std::vector<std::string>{"element1", "element2"},
+                                                 nonequal);
         res["less"] = new PredefinedFunction("less", new std::vector<std::string>{"element1", "element2"}, less);
         res["lesseq"] = new PredefinedFunction("lesseq", new std::vector<std::string>{"element1", "element2"}, lesseq);
-        res["greater"] = new PredefinedFunction("greater", new std::vector<std::string>{"element1", "element2"}, greater);
-        res["greatereq"] = new PredefinedFunction("greatereq", new std::vector<std::string>{"element1", "element2"}, greatereq);
+        res["greater"] = new PredefinedFunction("greater", new std::vector<std::string>{"element1", "element2"},
+                                                greater);
+        res["greatereq"] = new PredefinedFunction("greatereq", new std::vector<std::string>{"element1", "element2"},
+                                                  greatereq);
 
         // Predicates
         res["isint"] = new PredefinedFunction("isint", new std::vector<std::string>{"element"}, isint);
@@ -204,84 +210,80 @@ private:
     // Takes two real or int elements,
     // Returns their sum
     static Element *plus(Context *context, List *args) {
-        Element *a = eval(context, new List( *(new Elements{ a }) ));
-        Element *b = eval(context, new List( *(new Elements{ b }) ));
+        Element *a = eval(context, new List(*(new Elements{a})));
+        Element *b = eval(context, new List(*(new Elements{b})));
 
         if (a->getExecType() != typeInteger || a->getExecType() != typeReal || a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
         if (a->getExecType() == typeInteger) {
-            return new Integer( ((Integer *)a)->value + ((Integer *)b)->value );
-        }
-        else {
-            return new Real( ((Real *)a)->value + ((Real *)b)->value );
+            return new Integer(((Integer *) a)->value + ((Integer *) b)->value);
+        } else {
+            return new Real(((Real *) a)->value + ((Real *) b)->value);
         }
     }
 
     // Takes two real or int elements,
     // Returns their difference
     static Element *minus(Context *context, List *args) {
-        Element *a = eval(context, new List( *(new Elements{ a }) ));
-        Element *b = eval(context, new List( *(new Elements{ b }) ));
+        Element *a = eval(context, new List(*(new Elements{a})));
+        Element *b = eval(context, new List(*(new Elements{b})));
 
         if (a->getExecType() != typeInteger || a->getExecType() != typeReal || a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
         if (a->getExecType() == typeInteger) {
-            return new Integer( ((Integer *)a)->value - ((Integer *)b)->value );
-        }
-        else {
-            return new Real( ((Real *)a)->value - ((Real *)b)->value );
+            return new Integer(((Integer *) a)->value - ((Integer *) b)->value);
+        } else {
+            return new Real(((Real *) a)->value - ((Real *) b)->value);
         }
     }
 
     // Takes two real or int elements,
     // Returns their multiplication
     static Element *times(Context *context, List *args) {
-        Element *a = eval(context, new List( *(new Elements{ a }) ));
-        Element *b = eval(context, new List( *(new Elements{ b }) ));
+        Element *a = eval(context, new List(*(new Elements{a})));
+        Element *b = eval(context, new List(*(new Elements{b})));
 
         if (a->getExecType() != typeInteger || a->getExecType() != typeReal || a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
         if (a->getExecType() == typeInteger) {
-            return new Integer( ((Integer *)a)->value * ((Integer *)b)->value );
-        }
-        else {
-            return new Real( ((Real *)a)->value * ((Real *)b)->value );
+            return new Integer(((Integer *) a)->value * ((Integer *) b)->value);
+        } else {
+            return new Real(((Real *) a)->value * ((Real *) b)->value);
         }
     }
 
     // Takes two real or int elements, 
     // Returns their division
     static Element *divide(Context *context, List *args) {
-        Element *a = eval(context, new List( *(new Elements{ a }) ));
-        Element *b = eval(context, new List( *(new Elements{ b }) ));
+        Element *a = eval(context, new List(*(new Elements{a})));
+        Element *b = eval(context, new List(*(new Elements{b})));
 
         if (a->getExecType() != typeInteger || a->getExecType() != typeReal || a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
         if (a->getExecType() == typeInteger) {
-            return new Integer( ((Integer *)a)->value / ((Integer *)b)->value );
-        }
-        else {
-            return new Real( ((Real *)a)->value / ((Real *)b)->value );
+            return new Integer(((Integer *) a)->value / ((Integer *) b)->value);
+        } else {
+            return new Real(((Real *) a)->value / ((Real *) b)->value);
         }
     };
 
     // Takes list, returns its first element
     static Element *head(Context *context, List *args) {
-        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *a = eval(context, new List(*(new Elements{a})));
 
         if (a->getExecType() != typeList) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        return new Element( *(((List *)a)->elements[0]) );
+        return new Element(*(((List *) a)->elements[0]));
     };
 
     // Takes list, returns itself without first element
@@ -479,7 +481,7 @@ class Context {
 private:
     Context() = default;
 
-    std::map<std::string, Function> functions;
+    std::map<std::string, Function *> functions;
 
 public:
 
@@ -489,7 +491,7 @@ public:
         return res;
     }
 
-    const std::map<std::string, FunctionPointer> &getFunctions() const {
+    const std::map<std::string, Function *> &getFunctions() const {
         return functions;
     }
 
@@ -498,15 +500,15 @@ public:
         return elem != functions.end();
     }
 
-    FunctionPointer get(std::string name) {
+    Function *get(std::string name) {
         if (!has(name)) {
             return nullptr;
         }
         return functions[name];
     }
 
-    FunctionPointer set(std::string name, FunctionPointer value) {
-        FunctionPointer res = nullptr;
+    Function *set(std::string name, Function *value) {
+        Function *res = nullptr;
         if (has(name)) {
             res = functions[name];
         }
