@@ -127,7 +127,7 @@ public:
         res["and"] = new PredefinedFunction("and", new std::vector<std::string>{"element1", "element2"}, f_and);
         res["or"] = new PredefinedFunction("or", new std::vector<std::string>{"element1", "element2"}, f_or);
         res["xor"] = new PredefinedFunction("xor", new std::vector<std::string>{"element1", "element2"}, f_xor);
-        res["not"] = new PredefinedFunction("not", new std::vector<std::string>{"element1", "element2"}, f_not);
+        res["not"] = new PredefinedFunction("not", new std::vector<std::string>{"element"}, f_not);
 
         // Evaluator
         res["eval"] = new PredefinedFunction("eval", new std::vector<std::string>{"element"}, eval);
@@ -273,7 +273,7 @@ private:
         } else {
             return new Real(((Real *) a)->value / ((Real *) b)->value);
         }
-    };
+    }
 
     // Takes list, returns its first element
     static Element *head(Context *context, List *args) {
@@ -283,187 +283,296 @@ private:
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        return new Element(*(((List *) a)->elements[0]));
-    };
+        return new Element( *(((List *)a)->elements[0]) );
+    }
 
     // Takes list, returns itself without first element
     static Element *tail(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+
+        if (a->getExecType() != typeList) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        List *res = new List();
+        List *a_list = (List*)a;
+
+        for (int i = 1; i < a_list->elements.size(); i++) {
+            res->elements.push_back(a_list->elements[i]);
+        }
+
+        return res;
+    }
 
     // First arg can be any type, second is a list,
     // Returns list (second arg) with new first element - first arg
     static Element *cons(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ a }) ));
+
+        if (b->getExecType() != typeList) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        List *res = new List();
+        List *b_list = (List*)b;
+
+        res->elements.push_back(a);
+        for (int i = 0; i < b_list->elements.size(); i++) {
+            res->elements.push_back(b_list->elements[i]);
+        }
+
+        return res;
+    }
 
     // Takes two elements of same type of int, real or bool,
     // Returns true if elements are equal, false otherwise
     static Element *equal(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeInteger ||
+            a->getExecType() != typeReal || 
+            a->getExecType() != typeBoolean || 
+            a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        switch (a->getExecType()) {
+            case typeBoolean:
+                return new Boolean(((Boolean *)a)->value == ((Boolean *)b)->value);
+            case typeInteger:
+                return new Boolean(((Integer *)a)->value == ((Integer *)b)->value);
+            case typeReal:
+                return new Boolean(((Real *)a)->value == ((Real *)b)->value);
+        }
+    }
 
     // Takes two elements of same type of int, real or bool,
     // Returns true if elements are not equal, false otherwise
     static Element *nonequal(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeInteger ||
+            a->getExecType() != typeReal || 
+            a->getExecType() != typeBoolean || 
+            a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        switch (a->getExecType()) {
+            case typeBoolean:
+                return new Boolean(((Boolean *)a)->value != ((Boolean *)b)->value);
+            case typeInteger:
+                return new Boolean(((Integer *)a)->value != ((Integer *)b)->value);
+            case typeReal:
+                return new Boolean(((Real *)a)->value != ((Real *)b)->value);
+        }
+    }
 
     // Takes two elements of same type of int, real or bool,
     // Returns true if first element is less than second, false otherwise
     static Element *less(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeInteger ||
+            a->getExecType() != typeReal || 
+            a->getExecType() != typeBoolean || 
+            a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        switch (a->getExecType()) {
+            case typeBoolean:
+                return new Boolean(((Boolean *)a)->value < ((Boolean *)b)->value);
+            case typeInteger:
+                return new Boolean(((Integer *)a)->value < ((Integer *)b)->value);
+            case typeReal:
+                return new Boolean(((Real *)a)->value < ((Real *)b)->value);
+        }
+    }
 
     // Takes two elements of same type of int, real or bool,
     // Returns true if first element is less or equal to second, false otherwise
     static Element *lesseq(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeInteger ||
+            a->getExecType() != typeReal || 
+            a->getExecType() != typeBoolean || 
+            a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        switch (a->getExecType()) {
+            case typeBoolean:
+                return new Boolean(((Boolean *)a)->value <= ((Boolean *)b)->value);
+            case typeInteger:
+                return new Boolean(((Integer *)a)->value <= ((Integer *)b)->value);
+            case typeReal:
+                return new Boolean(((Real *)a)->value <= ((Real *)b)->value);
+        }
+    }
 
     // Takes two elements of same type of int, real or bool,
     // Returns true if first element is greater than second, false otherwise
     static Element *greater(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeInteger ||
+            a->getExecType() != typeReal || 
+            a->getExecType() != typeBoolean || 
+            a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        switch (a->getExecType()) {
+            case typeBoolean:
+                return new Boolean(((Boolean *)a)->value > ((Boolean *)b)->value);
+            case typeInteger:
+                return new Boolean(((Integer *)a)->value > ((Integer *)b)->value);
+            case typeReal:
+                return new Boolean(((Real *)a)->value > ((Real *)b)->value);
+        }
+    }
 
     // Takes two elements of same type of int, real or bool,
     // Returns true if first element is greater or equal to second, false otherwise
     static Element *greatereq(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeInteger ||
+            a->getExecType() != typeReal || 
+            a->getExecType() != typeBoolean || 
+            a->getExecType() != b->getExecType()) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        switch (a->getExecType()) {
+            case typeBoolean:
+                return new Boolean(((Boolean *)a)->value >= ((Boolean *)b)->value);
+            case typeInteger:
+                return new Boolean(((Integer *)a)->value >= ((Integer *)b)->value);
+            case typeReal:
+                return new Boolean(((Real *)a)->value >= ((Real *)b)->value);
+        }
+    }
 
     // Takes one argument, returns true if it is integer,
     // Or false, otherwise
     static Element *isint(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
-        }
-
-        // [TODO: Evaluation] 
-    };
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        if (a->getExecType() == typeInteger) 
+            return new Boolean(true);
+        else
+            return new Boolean(false);
+    }
 
     // Takes one argument, returns true if it is real,
     // Or false, otherwise
     static Element *isreal(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
-        }
-
-        // [TODO: Evaluation] 
-    };
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        if (a->getExecType() == typeReal) 
+            return new Boolean(true);
+        else
+            return new Boolean(false);
+    }
 
     // Takes one argument, returns true if it is boolean,
     // Or false, otherwise
     static Element *isbool(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
-        }
-
-        // [TODO: Evaluation] 
-    };
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        if (a->getExecType() == typeBoolean) 
+            return new Boolean(true);
+        else
+            return new Boolean(false);
+    }
 
     // Takes one argument, returns true if it is null,
     // Or false, otherwise
     static Element *isnull(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
-        }
-
-        // [TODO: Evaluation] 
-    };
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        if (a->getExecType() == typeNil) 
+            return new Boolean(true);
+        else
+            return new Boolean(false);
+    }
 
     // Takes one argument, returns true if it is an atom,
     // Or false, otherwise
     static Element *isatom(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
-        }
-
-        // [TODO: Evaluation] 
-    };
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        if (a->getExecType() == typeAtom) 
+            return new Boolean(true);
+        else
+            return new Boolean(false);
+    }
 
     // Takes one argument, returns true if it is a list,
     // Or false, otherwise
     static Element *islist(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
-            // [TODO: Exceptions] Type mismatch exception
-        }
-
-        // [TODO: Evaluation] 
-    };
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        if (a->getExecType() == typeList) 
+            return new Boolean(true);
+        else
+            return new Boolean(false);
+    }
 
     // Takes two elements of type boolean,
     // Returns result of logical and as boolean
     static Element *f_and(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeBoolean || b->getExecType() != typeBoolean) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        return new Boolean( ((Boolean*)a)->value & ((Boolean*)b)->value );
+    }
 
     // Takes two elements of type boolean,
     // Returns result of logical or as boolean
     static Element *f_or(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeBoolean || b->getExecType() != typeBoolean) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        return new Boolean( ((Boolean*)a)->value | ((Boolean*)b)->value );
+    }
 
     // Takes two elements of type boolean,
     // Returns result of logical xor as boolean
     static Element *f_xor(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+        Element *b = eval(context, new List( *(new Elements{ b }) ));
+
+        if (a->getExecType() != typeBoolean || b->getExecType() != typeBoolean) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        return new Boolean( ((Boolean*)a)->value & ((Boolean*)b)->value );
+    }
 
-    // Takes two elements of type boolean,
-    // Returns result of logical negation as boolean
+    // Takes element of type boolean,
+    // Returns its logical negation as boolean
     static Element *f_not(Context *context, List *args) {
-        if (args->elements[0]->getExecType() != typeAtom) {
+        Element *a = eval(context, new List( *(new Elements{ a }) ));
+
+        if (a->getExecType() != typeBoolean) {
             // [TODO: Exceptions] Type mismatch exception
         }
 
-        // [TODO: Evaluation] 
-    };
+        return new Boolean( !((Boolean*)a)->value );
+    }
 
     // Takes one element as argument,
     // If it is list - return result of its evaluation
@@ -473,8 +582,8 @@ private:
             throw new TypeMismatchException("eval", toString(args->elements[0]->getExecType()), toString(typeAtom));
         }
 
-        // [TODO: Evaluation]
-    };
+        // [TODO: Evaluation] 
+    }
 };
 
 class Context {
