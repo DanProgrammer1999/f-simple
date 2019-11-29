@@ -18,7 +18,7 @@ enum ExecutionType
     typeNil,
     typeList,
     typePredefinedList
-}
+};
 
 class Element;
 typedef std::vector<Element *> Elements;
