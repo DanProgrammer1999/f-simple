@@ -1,12 +1,8 @@
 #include <map>
 
+#include "semantic.h"
 #include "parser.h"
 #include "errors.h"
-
-class Context;
-class PredefinedFunction;
-class CustomFunction;
-class Lambda Function;
 
 typedef Element *(*FunctionPointer)(Context *, List *);
 
@@ -541,6 +537,11 @@ public:
 
         // Context MUST NOT be used here, need it because of override
         // TODO implement this (using predefined eval probably)
+        for(auto item : args->elements){
+
+        }
+    }
+
         this->localContext.get()
     }
 };
