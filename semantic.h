@@ -12,7 +12,6 @@
 #include <sstream>
 
 class Context;
-typedef Element *(*FunctionPointer)(Context *, List *);
 
 class Function;
 class PredefinedFunction;

@@ -4,6 +4,8 @@
 #include "parser.h"
 #include "errors.h"
 
+typedef Element *(*FunctionPointer)(Context *, List *);
+
 class Function : public Element {
 protected:
     std::string name{};
@@ -25,7 +27,6 @@ protected:
         }
     }
 
-    // # TODO write print method
     void print() override {
         std::stringstream res;
         res << "<Function " << this->name << "(" << this->args << ")";
@@ -49,7 +50,7 @@ public:
 
 class CustomFunction : public Function {
 protected:
-    std::vector<Element *> *body;
+    std::vector<Element *> body;
     Context *localContext;
 public:
     CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
@@ -165,10 +166,23 @@ private:
         }
 
         if (args->elements[1]->getExecType() != typeList) {
-
+            throw new TypeMismatchException("func", toString(args->elements[1]->getExecType()), toString(typeList));
         }
 
-        // [TODO: Evaluation] Save function name to context
+        std::string name = ((Atom *) args->elements[0])->identifier;
+        std::vector<std::string> func_args;
+        std::vector<Element *> body = ((List *) args->elements[2])->elements;
+
+        for (Element* arg : ((List *) args->elements[1])->elements) {
+            if (arg->getExecType() != typeAtom) {
+                throw new TypeMismatchException("func", toString(arg->getExecType()), toString(typeAtom));
+            }
+            func_args.push_back(((Atom *) arg)->identifier);
+        }
+
+        Function *function = new CustomFunction(name, &func_args, &body, context);
+        // TODO resolve error "member access into incomplete types"
+        context->set(name, function);
     }
 
     // Takes two elements (List, Element): (args, body)
