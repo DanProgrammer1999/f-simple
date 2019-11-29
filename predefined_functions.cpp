@@ -102,7 +102,20 @@ Element *cond(Context *context, List *args) {
 // Takes two elements: (condition, body)
 // Loop statement, calculate condition in loop, then execute body if true
 Element *f_while(Context *context, List *args) {
-    // [TODO: Evaluation]
+    while(true){
+        Element *eval_res = eval(context, new List(args->elements[0]));
+        Boolean *cond_res = toBool(eval_res);
+        List *body = new List(args->elements[2]);
+
+        if(cond_res == nullptr){
+            throw TypeMismatchException("while", toString(eval_res->getExecType()), toString(typeBoolean));
+        }
+        if(!cond_res->value){
+            return Nil::getNil();
+        }
+
+        eval(context, body);
+    }
 }
 
 // Takes one element
