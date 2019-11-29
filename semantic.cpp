@@ -10,7 +10,7 @@ typedef Element *(*FunctionPointer)(Context *, List *);
 class DefaultFunctions {
 public:
     // quote setq func lambda prog cond while return break
-    static std::map<std::string, FunctionPointer> getDefaultFunctions() {
+    static std::map<std::string,> getDefaultFunctions() {
         std::map<std::string, FunctionPointer> res;
         // Special forms, keyword functions
         res["quote"] = quote;
@@ -544,45 +544,6 @@ public:
 class LambdaFunction : public CustomFunction {
     LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext):
                 CustomFunction("<lambda_func>", args, body, localContext), lambda(true){};
-};
-
-class Function : public Element {
-private:
-    std::string name{};
-    std::vector<std::string> *args{};
-    Element *body;
-
-public:
-    Function(Atom *name, List *args, Element *body): body(body) {
-        if(name != nullptr && !name->identifier.empty()){
-            this->name = name->identifier;
-        }
-        // else it is nullptr by default
-
-        for(auto elem: args->elements) {
-            try {
-                Atom *arg = (Atom *) elem;
-                this->args->push_back(arg->identifier);
-            }
-            catch (std::exception &) {
-                // invalid element type exception, must be atom
-            }
-        }
-    }
-
-    Element eval(Context* context, List *args){
-        // if body is literal, simply return its value
-
-        // else if body is atom, try to look it up in context dict, and throw exception if does not exist
-        // but not good approach, since should bind the function to value in context when declared, not when called,
-        // as context may change
-        // better resolve value of literal before creating a function
-
-        // if it's a list, create new context (copy), execute statements one by one, return result.
-    }
-
-    // # TODO maybe?
-    void print() override {}
 };
 
 
