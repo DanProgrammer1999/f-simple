@@ -1,3 +1,5 @@
+#ifndef F_SIMPLE_PARSER_H
+#define F_SIMPLE_PARSER_H
 
 #include <list>
 #include <vector>
@@ -19,6 +21,23 @@ enum ExecutionType
     typeNil,
     typeList,
     typePredefinedList
+};
+
+const std::string toString(ExecutionType type) {
+    switch (type) {
+        typeElement: return "Element";
+        typeAtom: return "Atom";
+        typeKeyword: return "Keyword";
+        typeLiteral: return "Literal";
+        typeInteger: return "Integer";
+        typeReal: return "Real";
+        typeBoolean: return "Boolean";
+        typeNil: return "Nil";
+        typeList: return "List";
+        typePredefinedList: return "List";
+        default:
+            return "UNKNOWN TYPE";
+    }
 }
 
 class Element;
@@ -80,16 +99,23 @@ public:
                   << " ATOM->" << identifier << std::endl;
         tabPadding--;
     }
+
+    static Atom *fromElement(Element *element){
+        if(element->getExecType() != typeAtom){
+            return nullptr;
+        }
+
+        return static_cast<Atom *>(element);
+    }
 };
 
 class Keyword : public Atom
 {
 public:
-    std::string identifier;
 
-    Keyword(std::string identifier) : identifier(identifier)
+    Keyword(std::string identifier) : Atom(identifier)
     {
-        execType = typeKeyword;
+        execType = typeAtom;
     }
 
     void print() override
@@ -108,6 +134,14 @@ public:
     Literal()
     {
         execType = typeLiteral;
+    }
+
+    static Literal *fromElement(Element *element){
+        if(element->getExecType() != typeLiteral){
+            return nullptr;
+        }
+
+        return static_cast<Literal *>(element);
     }
 };
 
@@ -162,10 +196,6 @@ class Boolean : public Literal
 public:
     bool value;
 
-    Boolean()
-    {
-        execType = typeBoolean;
-    }
     Boolean(bool value) : value(value)
     {
         execType = typeBoolean;
@@ -182,10 +212,20 @@ public:
 
 class Nil : public Literal
 {
-public:
+private:
+    static Nil* object;
     Nil()
     {
         execType = typeNil;
+    }
+
+public:
+    static Nil* getNil(){
+        if(object == nullptr){
+            object = new Nil();
+        }
+
+        return object;
     }
     void print() override
     {
@@ -223,6 +263,14 @@ public:
         }
         tabPadding--;
     }
+
+    static List *fromElement(Element *element){
+        if(element->getExecType() != typeList){
+            return nullptr;
+        }
+
+        return static_cast<List *>(element);
+    }
 };
 
 class PredefinedList : public List
@@ -230,7 +278,7 @@ class PredefinedList : public List
 public:
     PredefinedList(Keyword *keyword, Elements elements)
     {
-        execType = typePredefinedList;
+        execType = typeList;
         elements.push_back(keyword);
         this->elements.insert(this->elements.end(), elements.begin(), elements.end());
     }
@@ -248,3 +296,5 @@ public:
         tabPadding--;
     }
 };
+
+#endif //F_SIMPLE_PARSER_H
