@@ -24,6 +24,7 @@ protected:
     Function(std::string name, std::vector<std::string> *args) :
             name(name), args(args), args_number(args->size()), execType() {};
 
+public:
     // Context here so that predefined functions can access it
     virtual Element *eval(Context *currContext, List *args) {
         return nullptr;
