@@ -24,7 +24,7 @@ enum ExecutionType
     typeFunction,
 };
 
-const std::string toString(ExecutionType type) {
+static std::string toString(ExecutionType type) {
     switch (type) {
         typeElement: return "Element";
         typeAtom: return "Atom";
@@ -237,21 +237,11 @@ public:
 
 class Nil : public Literal
 {
-private:
-    static Nil* object;
-    Nil()
-    {
+public:
+    Nil() {
         execType = typeNil;
     }
 
-public:
-    static Nil* getNil(){
-        if(object == nullptr){
-            object = new Nil();
-        }
-
-        return object;
-    }
     void print() override
     {
         tabPadding++;

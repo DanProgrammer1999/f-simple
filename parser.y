@@ -74,7 +74,7 @@ Literal
 
 List
 	: LPARENT	           RPARENT {$$ = new List(); $$->print();}
-	| LPARENT      	  Elements RPARENT {$$ = new List(*$2); $$->print();}
+	| LPARENT      	  Elements RPARENT {$$ = new List($2); $$->print();}
 	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3); $$->print();}
 	;
 
