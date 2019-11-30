@@ -4,15 +4,20 @@
 	#include <string>
 
 	Program* root;
+	bool no_err = true;
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
-	void yyerror(const char* s) { printf("ERROR: %sn", s); }
+	void yyerror(const char* s) { printf("ERROR: %sn", s); no_err = false; }
 %}
 
 %union {
 	int token;
 	std::string *string;
+
+	double real;
+	bool boolean;
+	int integer;
 
 	Program* program;
 	Element* element;
@@ -42,7 +47,7 @@
 %%
 
 Program
-	: Elements END {root = new Program(*$1);}
+	: Elements END {root = new Program(*$1); root->print();}
 	;
 
 Elements
@@ -62,23 +67,27 @@ Atom
 
 Literal
 	: INTEGER	{$$ = new Integer($1);}
-	| REAL		{$$ = new Real($1);}
-	| BOOLEAN	{$$ = new Boolean($1);}
+	| REAL		{$$ = new Real(yylval.real);}
+	| BOOLEAN	{$$ = new Boolean(yylval.boolean);}
 	| NIL		{$$ = new Nil();}
 	;
 
 List
-	: LPARENT	           RPARENT {$$ = new List();}
-	| LPARENT      	  Elements RPARENT {$$ = new List(*$2);}
-	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);}
+	: LPARENT	           RPARENT {$$ = new List(); $$->print();}
+	| LPARENT      	  Elements RPARENT {$$ = new List(*$2); $$->print();}
+	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3); $$->print();}
 	;
 
 %%
 
 int main(int argc, char **argv)
 {
-    yyparse();
-    std::cout << root << std::endl;
-	  root->print();
+	yyparse();
+	if (!no_err) {
+		return -1;
+	}
+
+	std::cout << root << std::endl;
+    
     return 0;
 }
