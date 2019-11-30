@@ -77,7 +77,12 @@ Element *prog(Context *context, List *args) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
 
-    // [TODO: Evaluation] Using context call eval() for each element sequentially
+    for(auto elem : args->elements){
+        auto res = eval(context, new List(elem));
+        // TODO maybe print result?
+    }
+
+    return new Integer(0);
 }
 
 // Takes two (or three) elements: (condition, body1, body2)
