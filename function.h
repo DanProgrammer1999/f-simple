@@ -69,13 +69,14 @@ public:
         if (args->elements.size() != this->args_number) {
             throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
         }
-
+        auto local_context = currContext->copy();
         // Context MUST NOT be used here, need it because of override
-        for (auto item : args->elements) {
-            if(item->getExecType() == typeAtom){
-                if(currContext->has(Atom::fromElement(item)->identifier)
-            }
+        // arguments are already eval'd
+        for(int i = 0; i < this->args->size(); i++){
+            local_context->set(this->args[i], args->elements[i]);
         }
+
+
     }
 };
 
