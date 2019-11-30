@@ -1,0 +1,40 @@
+// Checking quote functionality
+( setq a '(plus 1 2) )
+( setq b ( quote (plus 1 2) ) )
+// TODO Print a and b [should be (plus 1 2) both]
+
+// Checking lambda functionality
+( setq lfunc (lambda (a b) ( ( return (plus a b) ) )) )
+// TODO Print result of calling (lfunc 1 2) [should be 3]
+
+// Checking break functionality
+( while ( true ) 
+    ( 
+        ( setq a (plus a 1) )
+        ( cond ( greater a 10 ) ( break ) () )
+    ) 
+)
+// TODO Print a [should be 11]
+
+// Checking head and tail functionality
+( setq l (1 2 3 4 5) )
+( setq h (head l) )
+( setq t (tail l) )
+// TODO Print h and l [should be 1 and (2 3 4 5)]
+
+// Checking predicates functionality
+( setq i 10 )
+( setq f 10.5 )
+( setq b1 (isint i) )
+( setq b2 (isreal f) )
+( setq b3 (islist b1) )
+// TODO Print b1, b2 and b3 [should be true, true, false]
+
+// Checking logical operators functionality
+( setq b4 (and b2 b3) )
+( setq b5 (or b2 b3) )
+// TODO Print b4 and b5 [should be false and true]
+
+// Checking eval() functionality
+( eval b )
+// TODO Print b [should be 3]
