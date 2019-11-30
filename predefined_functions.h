@@ -7,6 +7,9 @@
 #include "function.h"
 #include "context.h"
 
+class Context;
+class Function;
+
 Element *quote(Context *context, List *args);
 Element *setq(Context *context, List *args);
 Element *func(Context *context, List *args);

@@ -96,7 +96,7 @@ Element *cond(Context *context, List *args) {
     }
 
     bool condition = cond_obj->value;
-    Element *res = Nil::getNil();
+    Element *res = new Nil();
     if(condition){
         res = eval(context, new List(args->elements[1]));
     }
@@ -119,7 +119,7 @@ Element *f_while(Context *context, List *args) {
             throw TypeMismatchException("while", toString(eval_res->getExecType()), toString(typeBoolean));
         }
         if(!cond_res->value){
-            return Nil::getNil();
+            return new Nil();
         }
 
         eval(context, body);
@@ -570,7 +570,7 @@ Element *eval(Context *context, List *args) {
 }
 
 Element *nil(Context *context, List *args) {
-    return Nil::getNil();
+    return new Nil();
 }
 
 Element *f_true(Context *context, List *args) {

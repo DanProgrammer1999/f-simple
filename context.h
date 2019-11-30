@@ -5,6 +5,8 @@
 #include "function.h"
 #include "predefined_functions.h"
 
+class Function;
+
 class Context {
 private:
     Context() = default;
@@ -13,11 +15,7 @@ private:
 
 public:
 
-    static Context *getDefaultContext() {
-        auto res = new Context();
-        res->functions = getDefaultFunctions();
-        return res;
-    }
+    static Context *getDefaultContext();
 
     const std::map<std::string, Function *> &getFunctions() const {
         return functions;

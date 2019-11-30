@@ -12,6 +12,9 @@
 #include "errors.h"
 #include "context.h"
 
+class Context;
+
+
 typedef Element *(*FunctionPointer)(Context *, List *);
 
 class Function : public Element {
@@ -20,9 +23,10 @@ protected:
     std::vector<std::string> *args;
     int args_number;
     bool lambda{false};
+    ExecutionType execType;
 
     Function(std::string name, std::vector<std::string> *args) :
-            name(name), args(args), args_number(args->size()), execType() {};
+            name(name), args(args), args_number(args->size()), execType(typeFunction) {};
 
 public:
     // Context here so that predefined functions can access it
@@ -65,22 +69,7 @@ public:
     CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
                    Context *localContext) : Function(name, args), body(body), localContext(localContext) {};
 
-    Element *eval(Context *currContext, List *args) override {
-        if (args->elements.size() != this->args_number) {
-            throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
-        }
-        auto local_context = currContext->copy();
-        // Context MUST NOT be used here, need it because of override
-        // arguments are already eval'd
-        for (int i = 0; i < this->args->size(); i++) {
-            auto arg = new CustomFunction(this->args[i], &(std::vector<std::string>{}),
-                                          &(std::vector<Element *>{args->elements[i]}), local_context);
-            local_context->set(this->args[i], arg);
-        }
-
-        auto res = local_context->get("eval")(local_context, this->body);
-        return res;
-    }
+    Element *eval(Context *currContext, List *args) override;
 };
 
 class LambdaFunction : public CustomFunction {
