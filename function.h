@@ -76,7 +76,8 @@ public:
             local_context->set(this->args[i], args->elements[i]);
         }
 
-
+        auto res = local_context->get("eval")(local_context, this->body);
+        return res;
     }
 };
 
