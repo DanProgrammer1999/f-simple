@@ -278,6 +278,11 @@ public:
         execType = typeList;
     }
 
+    List(Elements *elements){
+        this->elements = *elements;
+        execType = typeList;
+    }
+
     void print() override
     {
         tabPadding++;

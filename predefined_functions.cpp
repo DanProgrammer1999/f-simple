@@ -122,12 +122,14 @@ Element *f_while(Context *context, List *args) {
 // and returns it as the result of function (only used in functions)
 Element *f_return(Context *context, List *args) {
     // [TODO: Evaluation]
+    // Probably in function loop, not here
 }
 
 // Do not has any arguments,
 // Just interupts a loop
 Element *f_break(Context *context, List *args) {
     // [TODO: Evaluation]
+    // Probably in function loop, not here
 }
 
 // Takes two real or int elements,
@@ -517,12 +519,38 @@ Element *f_not(Context *context, List *args) {
 // If it is list - return result of its evaluation
 // Otherwise, just return
 Element *eval(Context *context, List *args) {
-    if (args->elements[0]->getExecType() != typeAtom) {
-        throw TypeMismatchException("eval", toString(args->elements[0]->getExecType()),
-                                    toString(typeAtom));
-    }
+    Element *operand = args->elements[0];
 
-    // [TODO: Evaluation]
+    switch (operand->getExecType()){
+        case typeAtom:
+        case typeNil:
+        case typeBoolean:
+        case typeInteger:
+        case typeReal:
+            return operand;
+        case typeList: {
+            List* list = List::fromElement(operand);
+            if(list->elements[0]->getExecType() != typeAtom){
+                // List or literal
+                return list;
+            }
+            else{
+                std::string func_name = Atom::fromElement(list->elements[0])->identifier;
+                Elements *eval_args{};
+                for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
+                    Element* arg = eval(context, new List(*e));
+                    eval_args->push_back(arg);
+                }
+                Function *func = context->get(func_name);
+                if(func == nullptr){
+                    throw NoSuchFunctionException("eval", func_name);
+                }
+                auto res = func->eval(context, new List(eval_args));
+
+                return res;
+            }
+        }
+    }
 }
 
 Element *nil(Context *context, List *args) {

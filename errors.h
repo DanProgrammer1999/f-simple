@@ -62,6 +62,7 @@ public:
 };
 
 class NoSuchFunctionException : SemanticException {
+public:
     NoSuchFunctionException(std::string function_name, std::string name_received) :
     SemanticException(build_message(function_name, name_received)) {};
 
