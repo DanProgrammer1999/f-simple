@@ -32,7 +32,7 @@ public:
 
     void validate_args_number(int given_number) {
         if (given_number != this->args_number) {
-            throw new ArgNumberMismatchException(this->name, given_number, this->args_number)
+            throw new ArgNumberMismatchException(this->name, given_number, this->args_number);
         }
     }
 
@@ -72,8 +72,10 @@ public:
         auto local_context = currContext->copy();
         // Context MUST NOT be used here, need it because of override
         // arguments are already eval'd
-        for(int i = 0; i < this->args->size(); i++){
-            local_context->set(this->args[i], args->elements[i]);
+        for (int i = 0; i < this->args->size(); i++) {
+            auto arg = new CustomFunction(this->args[i], &(std::vector<std::string>{}),
+                                          &(std::vector<Element *>{args->elements[i]}), local_context);
+            local_context->set(this->args[i], arg);
         }
 
         auto res = local_context->get("eval")(local_context, this->body);

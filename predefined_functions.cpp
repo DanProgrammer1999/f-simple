@@ -13,6 +13,7 @@ Element *setq(Context *context, List *args) {
     }
     std::string name = Atom::fromElement(args->elements[0])->identifier;
 
+    //TODO we should probably evaluate args before assignment
     Function* toSet = (Function *)args->elements[2];
     auto res = context->set(name, toSet);
 
@@ -563,6 +564,8 @@ Element *eval(Context *context, List *args) {
                 return res;
             }
         }
+        default:
+            return nullptr;
     }
 }
 

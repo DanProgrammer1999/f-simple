@@ -1,7 +1,7 @@
 #ifndef F_SIMPLE_ERRORS_H
 #define F_SIMPLE_ERRORS_H
 
-#include <bits/exception.h>
+ #include <bits/exception.h>
 #include <string>
 #include <sstream>
 #include <exception>
