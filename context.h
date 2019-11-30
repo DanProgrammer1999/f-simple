@@ -9,12 +9,10 @@ class Function;
 
 class Context {
 private:
-    Context() = default;
-
     std::map<std::string, Function *> functions;
 
 public:
-
+    Context();
     static Context *getDefaultContext();
 
     const std::map<std::string, Function *> &getFunctions() const {
@@ -48,6 +46,13 @@ public:
         auto newContext = new Context();
         newContext->functions = this->functions;
         return newContext;
+    }
+
+    void print() {
+        for(auto it = this->functions.cbegin(); it != this->functions.cend(); ++it)
+        {
+            std::cout << it->first << " " << it->second << "\n";
+        }
     }
 };
 

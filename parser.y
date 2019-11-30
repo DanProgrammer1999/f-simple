@@ -1,9 +1,12 @@
 %{
 	#include "parser.h"
+	#include "context.h"
+	#include "predefined_functions.h"
 	#include <iostream>
 	#include <string>
 
 	Program* root;
+	Context* global = new Context();
 	bool no_err = true;
 
 	extern "C" int yylex();
@@ -47,7 +50,7 @@
 %%
 
 Program
-	: Elements END {root = new Program(*$1); root->print();}
+	: Elements END {root = new Program(*$1);}
 	;
 
 Elements
@@ -74,8 +77,8 @@ Literal
 
 List
 	: LPARENT	           RPARENT {$$ = new List(); $$->print();}
-	| LPARENT      	  Elements RPARENT {$$ = new List($2); $$->print();}
-	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3); $$->print();}
+	| LPARENT      	  Elements RPARENT {$$ = new List($2); Element* calced = eval(global, new List($$)); calced->print();}
+	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);Element* calced = eval(global, new List($$));}
 	;
 
 %%

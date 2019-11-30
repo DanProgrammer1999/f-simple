@@ -1,4 +1,5 @@
 #include "predefined_functions.h"
+#include <iostream>
 
 Element *quote(Context *context, List *args) {
     // Return the argument itself
@@ -14,7 +15,7 @@ Element *setq(Context *context, List *args) {
     std::string name = Atom::fromElement(args->elements[0])->identifier;
 
     //TODO we should probably evaluate args before assignment
-    Function* toSet = (Function *)args->elements[2];
+    Function* toSet = (Function *)args->elements[1];
     auto res = context->set(name, toSet);
 
     return res;
@@ -219,6 +220,8 @@ Element *divide(Context *context, List *args) {
 // Takes list, returns its first element
 Element *head(Context *context, List *args) {
     Element *a = eval(context, new List( args->elements[0] ));
+    std::cout << "HEAD ARGS" << std::endl;
+    args->print();
 
     if (a->getExecType() != typeList) {
         throw TypeMismatchException("head", toString(a->getExecType()), toString(typeList));
@@ -535,30 +538,47 @@ Element *f_not(Context *context, List *args) {
 Element *eval(Context *context, List *args) {
     Element *operand = args->elements[0];
 
+    std::cout << "CONTEXT" << std::endl;
+    // context->print();
+    std::cout << "PASS1" << std::endl;
+
     switch (operand->getExecType()){
-        case typeAtom:
+        case typeAtom: {
+            std::string func_name = Atom::fromElement(args->elements[0])->identifier;
+
+            if(context->has(func_name)){
+                return context->get(func_name)->eval(context, new List());
+            }
+
+            return operand;
+        }
         case typeNil:
         case typeBoolean:
         case typeInteger:
         case typeReal:
             return operand;
         case typeList: {
+            std::cout << "PASS2" << std::endl;
             List* list = List::fromElement(operand);
             if(list->elements[0]->getExecType() != typeAtom){
                 // List or literal
                 return list;
             }
             else{
+                std::cout << "PASS3" << std::endl;
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
-                Elements *eval_args{};
+                Elements *eval_args = new Elements();
                 for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
                     Element* arg = eval(context, new List(*e));
+                    std::cout << "GOIN TO PSUH" << std::endl;
                     eval_args->push_back(arg);
                 }
+                std::cout << "PASS4 " << func_name << std::endl;
                 Function *func = context->get(func_name);
                 if(func == nullptr){
                     throw NoSuchFunctionException("eval", func_name);
                 }
+                std::cout << "PASS5" << std::endl;
                 auto res = func->eval(context, new List(eval_args));
 
                 return res;

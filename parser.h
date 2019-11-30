@@ -301,7 +301,7 @@ public:
     PredefinedList(Keyword *keyword, Elements elements)
     {
         execType = typeList;
-        elements.push_back(keyword);
+        this->elements.push_back(keyword);
         this->elements.insert(this->elements.end(), elements.begin(), elements.end());
     }
 
