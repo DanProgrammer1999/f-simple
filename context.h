@@ -3,6 +3,7 @@
 
 #include "parser.h"
 #include "function.h"
+#include "predefined_functions.h"
 
 class Context {
 private:
@@ -14,7 +15,7 @@ public:
 
     static Context *getDefaultContext() {
         auto res = new Context();
-        res->functions = GetDefaultFunctions();
+        res->functions = getDefaultFunctions();
         return res;
     }
 
