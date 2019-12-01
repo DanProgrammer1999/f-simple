@@ -547,6 +547,8 @@ Element *eval(Context *context, List *args) {
             std::string func_name = Atom::fromElement(args->elements[0])->identifier;
 
             if(context->has(func_name)){
+                // [ERROR HERE] eval() can be called for Integer here
+                // TODO: Fix this
                 return context->get(func_name)->eval(context, new List());
             }
 
