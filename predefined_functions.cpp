@@ -577,17 +577,19 @@ Element *eval(Context *context, List *args) {
                 Elements *eval_args = new Elements();
 
                 // evaluate args and map to current context
-                for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
-                    Element* arg = eval(context, new List(*e));
-                    if(arg->getExecType() == typeAtom){
-                        std::string arg_string = Atom::fromElement(arg)->identifier;
-                        if(context->has(arg_string)){
-                            arg = context->get(arg_string);
-                            arg = static_cast<Function *>(arg)->eval(context, new List());
+                if(func_name != "func" && func_name != "lambda") {
+                    for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
+                        Element *arg = eval(context, new List(*e));
+                        if (arg->getExecType() == typeAtom) {
+                            std::string arg_string = Atom::fromElement(arg)->identifier;
+                            if (context->has(arg_string)) {
+                                arg = context->get(arg_string);
+                                arg = static_cast<Function *>(arg)->eval(context, new List());
+                            }
                         }
+                        std::cout << "GOIN TO PSUH" << std::endl;
+                        eval_args->push_back(arg);
                     }
-                    std::cout << "GOIN TO PSUH" << std::endl;
-                    eval_args->push_back(arg);
                 }
                 std::cout << "PASS4 " << func_name << std::endl;
                 Function *func = context->get(func_name);
