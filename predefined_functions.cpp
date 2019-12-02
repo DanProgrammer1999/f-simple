@@ -94,7 +94,10 @@ Element *prog(Context *context, List *args) {
 Element *cond(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Boolean *cond_obj = toBool(a);
+    std::cout << "ELEMENTS: \n";
+
     if (cond_obj == nullptr) {
+        std::cout << (a->getExecType()) << std::endl;
         throw TypeMismatchException("cond", toString(a->getExecType()), toString(typeBoolean));
     }
 
@@ -559,24 +562,25 @@ Element *eval(Context *context, List *args) {
         case typeReal:
             return operand;
         case typeList: {
-            std::cout << "PASS2" << std::endl;
+            std::cout << "Eval got list" << std::endl;
             List *list = List::fromElement(operand);
             if (list->elements[0]->getExecType() != typeAtom) {
                 // first argument is literal or another list
+                std::cout << "List not a func call, returning" << std::endl;
                 return list;
             } else {
                 // treat as a function call
+                std::cout << "List is a func call" << std::endl;
 
-                std::cout << "PASS3" << std::endl;
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
+                std::cout << "Func name is " << func_name << std::endl;
+
                 Elements *eval_args = new Elements();
 
-                std::cout << "PASS4 " << func_name << std::endl;
-                Function *func = context->get(func_name);
-
-                if (func == nullptr) {
+                if(!context->get(func_name)){
                     throw NoSuchFunctionException("eval", func_name);
                 }
+                Function *func = context->get(func_name);
 
                 // evaluate args and map to current context
                 for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
@@ -597,6 +601,7 @@ Element *eval(Context *context, List *args) {
             }
         }
         default:
+            std::cout << "Not implemented yet" << std::endl;
             return nullptr;
     }
 }

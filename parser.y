@@ -89,6 +89,7 @@ List
 int main(int argc, char **argv)
 {
 	bool interactive = false;
+	Context *context = new Context();
 	if (argc > 1 && strcmp(argv[1], "-i") == 0) {
 		interactive = true;
 	}
@@ -98,9 +99,12 @@ int main(int argc, char **argv)
 			if (no_err) {
 				std::cout << root << std::endl;
 			}
+			auto res = eval(context, root);
+			res->print();
 			// clearerr(stdin);
 			rewind(stdin);
 		} catch (const std::exception& e) {
+			std::cout << e.what() << std::endl;
 			// clearerr(stdin);
 		}
 	} while (interactive);
