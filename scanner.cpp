@@ -271,7 +271,7 @@ Token Lexer::next()
     case ')':
         return atom(Token::Type::RParent);
     case '\'':
-        return atom(Token::Type::Keyword);
+        return Token(Token::Type::Keyword, "'");
     case '-':
         start += m_start;
         get();
@@ -329,6 +329,7 @@ Token Lexer::keyword(std::string lexeme)
         return Token(Token::Type::Boolean, lexeme);
 
     if (
+        lexeme == "quote" ||
         lexeme == "setq" ||
         lexeme == "func" ||
         lexeme == "lambda" ||
