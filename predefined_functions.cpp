@@ -586,12 +586,13 @@ Element *eval(Context *context, List *args) {
                     Element *arg = *e;
                     if(!func->predefined) {
                         arg = eval(context, new List(arg));
-                        if (arg->getExecType() == typeAtom) {
-                            std::string arg_string = Atom::fromElement(arg)->identifier;
-                            if (context->has(arg_string)) {
-                                arg = context->get(arg_string);
-                                arg = static_cast<Function *>(arg)->eval(context, new List());
-                            }
+                    }
+
+                    if (arg->getExecType() == typeAtom) {
+                        std::string arg_string = Atom::fromElement(arg)->identifier;
+                        if (context->has(arg_string)) {
+                            arg = context->get(arg_string);
+                            arg = static_cast<Function *>(arg)->eval(context, new List());
                         }
                     }
 
