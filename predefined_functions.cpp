@@ -544,18 +544,15 @@ Element *eval(Context *context, List *args) {
     std::cout << "PASS1" << std::endl;
 
     switch (operand->getExecType()) {
-//        case typeAtom: {
-////            std::string func_name = Atom::fromElement(args->elements[0])->identifier;
-////
-////            if(context->has(func_name)){
-////                // [ERROR HERE] eval() can be called for Integer here
-////                // TODO: Fix this
-////                return context->get(func_name)->eval(context, new List());
-////            }
-////
-////            return operand;
-////        }
-        case typeAtom:
+        case typeAtom: {
+            std::string func_name = Atom::fromElement(args->elements[0])->identifier;
+
+            if(context->has(func_name)){
+                return context->get(func_name)->eval(context, new List());
+            }
+
+            return operand;
+        }
         case typeNil:
         case typeBoolean:
         case typeInteger:
@@ -586,14 +583,6 @@ Element *eval(Context *context, List *args) {
                     Element *arg = *e;
                     if(!func->predefined) {
                         arg = eval(context, new List(arg));
-                    }
-
-                    if (arg->getExecType() == typeAtom) {
-                        std::string arg_string = Atom::fromElement(arg)->identifier;
-                        if (context->has(arg_string)) {
-                            arg = context->get(arg_string);
-                            arg = static_cast<Function *>(arg)->eval(context, new List());
-                        }
                     }
 
                     std::cout << "GOIN TO PSUH" << std::endl;
