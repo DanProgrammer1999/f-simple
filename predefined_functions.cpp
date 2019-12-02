@@ -94,10 +94,8 @@ Element *prog(Context *context, List *args) {
 Element *cond(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Boolean *cond_obj = toBool(a);
-    std::cout << "ELEMENTS: \n";
 
     if (cond_obj == nullptr) {
-        std::cout << (a->getExecType()) << std::endl;
         throw TypeMismatchException("cond", toString(a->getExecType()), toString(typeBoolean));
     }
 

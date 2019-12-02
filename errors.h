@@ -54,7 +54,7 @@ public:
 
     static std::string build_message(std::string function_name, std::string received, std::string required) {
         std::stringstream message_stream;
-        message_stream << "Incorrect number of arguments received in function " << function_name << "\n";
+        message_stream << "Incorrect type of argument received in function " << function_name << "\n";
         message_stream << "Received type " << received << ", but type " << required << " is expected" << std::endl;
 
         return message_stream.str();
