@@ -579,6 +579,8 @@ Element *eval(Context *context, List *args) {
                 }
                 std::cout << "PASS4 " << func_name << std::endl;
                 Function *func = context->get(func_name);
+                func->validate_args_number(eval_args->size());
+
                 if(func == nullptr){
                     throw NoSuchFunctionException("eval", func_name);
                 }
