@@ -55,7 +55,9 @@ private:
 
 public:
     PredefinedFunction(std::string name, std::vector<std::string> *args, FunctionPointer handler) :
-            Function(name, args), handler(handler), predefined(true) {};
+            Function(name, args), handler(handler){
+        this->predefined = true;
+    };
 
     Element *eval(Context *currContext, List *args) override {
         validate_args_number(args->elements.size());
