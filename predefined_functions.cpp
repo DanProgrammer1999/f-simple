@@ -545,17 +545,18 @@ Element *eval(Context *context, List *args) {
     std::cout << "PASS1" << std::endl;
 
     switch (operand->getExecType()){
-        case typeAtom: {
-            std::string func_name = Atom::fromElement(args->elements[0])->identifier;
-
-            if(context->has(func_name)){
-                // [ERROR HERE] eval() can be called for Integer here
-                // TODO: Fix this
-                return context->get(func_name)->eval(context, new List());
-            }
-
-            return operand;
-        }
+//        case typeAtom: {
+////            std::string func_name = Atom::fromElement(args->elements[0])->identifier;
+////
+////            if(context->has(func_name)){
+////                // [ERROR HERE] eval() can be called for Integer here
+////                // TODO: Fix this
+////                return context->get(func_name)->eval(context, new List());
+////            }
+////
+////            return operand;
+////        }
+        case typeAtom:
         case typeNil:
         case typeBoolean:
         case typeInteger:
@@ -574,16 +575,23 @@ Element *eval(Context *context, List *args) {
                 Elements *eval_args = new Elements();
                 for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
                     Element* arg = eval(context, new List(*e));
+                    if(arg->getExecType() == typeAtom){
+                        arg = context->get(Atom::fromElement(arg)->identifier);
+                        if(arg == nullptr){
+                            throw NoSuchFunctionException("eval", Atom::fromElement(arg)->identifier);
+                        }
+                    }
                     std::cout << "GOIN TO PSUH" << std::endl;
                     eval_args->push_back(arg);
                 }
                 std::cout << "PASS4 " << func_name << std::endl;
                 Function *func = context->get(func_name);
-                func->validate_args_number(eval_args->size());
 
                 if(func == nullptr){
                     throw NoSuchFunctionException("eval", func_name);
                 }
+
+                func->validate_args_number(eval_args->size());
                 std::cout << "PASS5" << std::endl;
                 auto res = func->eval(context, new List(eval_args));
 
