@@ -16,8 +16,8 @@ Element *setq(Context *context, List *args) {
 
     Element *to_set = args->elements[1];
     to_set = eval(context, new List(to_set));
-    auto *body = new std::vector<Element*>{to_set};
-    Function* const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
+    auto *body = new std::vector<Element *>{to_set};
+    Function *const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
     auto res = context->set(name, const_func);
 
     return res;
@@ -81,7 +81,7 @@ Element *prog(Context *context, List *args) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
 
-    for(auto elem : args->elements){
+    for (auto elem : args->elements) {
         auto res = eval(context, new List(elem));
         // TODO maybe print result?
     }
@@ -94,16 +94,15 @@ Element *prog(Context *context, List *args) {
 Element *cond(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Boolean *cond_obj = toBool(a);
-    if(cond_obj == nullptr){
+    if (cond_obj == nullptr) {
         throw TypeMismatchException("cond", toString(a->getExecType()), toString(typeBoolean));
     }
 
     bool condition = cond_obj->value;
     Element *res = new Nil();
-    if(condition){
+    if (condition) {
         res = eval(context, new List(args->elements[1]));
-    }
-    else{
+    } else {
         res = eval(context, new List(args->elements[2]));
     }
 
@@ -113,15 +112,15 @@ Element *cond(Context *context, List *args) {
 // Takes two elements: (condition, body)
 // Loop statement, calculate condition in loop, then execute body if true
 Element *f_while(Context *context, List *args) {
-    while(true){
+    while (true) {
         Element *eval_res = eval(context, new List(args->elements[0]));
         Boolean *cond_res = toBool(eval_res);
         List *body = new List(args->elements[2]);
 
-        if(cond_res == nullptr){
+        if (cond_res == nullptr) {
             throw TypeMismatchException("while", toString(eval_res->getExecType()), toString(typeBoolean));
         }
-        if(!cond_res->value){
+        if (!cond_res->value) {
             return new Nil();
         }
 
@@ -146,8 +145,8 @@ Element *f_break(Context *context, List *args) {
 // Takes two real or int elements,
 // Returns their sum
 Element *plus(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("plus", "Cannot compare arguments with different types");
@@ -165,8 +164,8 @@ Element *plus(Context *context, List *args) {
 // Takes two real or int elements,
 // Returns their difference
 Element *minus(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("minus", "Cannot compare arguments with different types");
@@ -184,8 +183,8 @@ Element *minus(Context *context, List *args) {
 // Takes two real or int elements,
 // Returns their multiplication
 Element *times(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("times", "Cannot compare arguments with different types");
@@ -203,8 +202,8 @@ Element *times(Context *context, List *args) {
 // Takes two real or int elements,
 // Returns their division
 Element *divide(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("divide", "Cannot compare arguments with different types");
@@ -221,7 +220,7 @@ Element *divide(Context *context, List *args) {
 
 // Takes list, returns its first element
 Element *head(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
     std::cout << "HEAD ARGS" << std::endl;
     args->print();
 
@@ -233,7 +232,7 @@ Element *head(Context *context, List *args) {
 
 // Takes list, returns itself without first element
 Element *tail(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() != typeList) {
         throw TypeMismatchException("tail", toString(a->getExecType()), toString(typeList));
@@ -252,8 +251,8 @@ Element *tail(Context *context, List *args) {
 // First arg can be any type, second is a list,
 // Returns list (second arg) with new first element - first arg
 Element *cons(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (b->getExecType() != typeList) {
         throw TypeMismatchException("cons", toString(b->getExecType()), toString(typeList));
@@ -273,8 +272,8 @@ Element *cons(Context *context, List *args) {
 // Takes two elements of same type of int, real or bool,
 // Returns true if elements are equal, false otherwise
 Element *equal(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("equal", "Cannot compare arguments with different types");
@@ -295,8 +294,8 @@ Element *equal(Context *context, List *args) {
 // Takes two elements of same type of int, real or bool,
 // Returns true if elements are not equal, false otherwise
 Element *nonequal(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("nonequal", "Cannot compare arguments with different types");
@@ -317,8 +316,8 @@ Element *nonequal(Context *context, List *args) {
 // Takes two elements of same type of int, real or bool,
 // Returns true if first element is less than second, false otherwise
 Element *less(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("less", "Cannot compare arguments with different types");
@@ -333,15 +332,15 @@ Element *less(Context *context, List *args) {
             return new Boolean(((Real *) a)->value < ((Real *) b)->value);
         default:
             throw TypeMismatchException("less", toString(a->getExecType()),
-                                            "Literal (number or bool)");
+                                        "Literal (number or bool)");
     }
 }
 
 // Takes two elements of same type of int, real or bool,
 // Returns true if first element is less or equal to second, false otherwise
 Element *lesseq(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("lesseq", "Cannot compare arguments with different types");
@@ -355,15 +354,15 @@ Element *lesseq(Context *context, List *args) {
             return new Boolean(((Real *) a)->value <= ((Real *) b)->value);
         default:
             throw TypeMismatchException("lesseq", toString(a->getExecType()),
-                                            "Literal (number or bool)");
+                                        "Literal (number or bool)");
     }
 }
 
 // Takes two elements of same type of int, real or bool,
 // Returns true if first element is greater than second, false otherwise
 Element *greater(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("greater", "Cannot compare arguments with different types");
@@ -378,15 +377,15 @@ Element *greater(Context *context, List *args) {
             return new Boolean(((Real *) a)->value > ((Real *) b)->value);
         default:
             throw TypeMismatchException("greater", toString(a->getExecType()),
-                                            "Literal (number or bool)");
+                                        "Literal (number or bool)");
     }
 }
 
 // Takes two elements of same type of int, real or bool,
 // Returns true if first element is greater or equal to second, false otherwise
 Element *greatereq(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != b->getExecType()) {
         throw CustomException("greatereq", "Cannot compare arguments with different types");
@@ -401,14 +400,14 @@ Element *greatereq(Context *context, List *args) {
             return new Boolean(((Real *) a)->value >= ((Real *) b)->value);
         default:
             throw TypeMismatchException("greatereq", toString(a->getExecType()),
-                                            "Literal (number or bool)");
+                                        "Literal (number or bool)");
     }
 }
 
 // Takes one argument, returns true if it is integer,
 // Or false, otherwise
 Element *isint(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() == typeInteger)
         return new Boolean(true);
@@ -419,7 +418,7 @@ Element *isint(Context *context, List *args) {
 // Takes one argument, returns true if it is real,
 // Or false, otherwise
 Element *isreal(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() == typeReal)
         return new Boolean(true);
@@ -430,7 +429,7 @@ Element *isreal(Context *context, List *args) {
 // Takes one argument, returns true if it is boolean,
 // Or false, otherwise
 Element *isbool(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() == typeBoolean)
         return new Boolean(true);
@@ -441,7 +440,7 @@ Element *isbool(Context *context, List *args) {
 // Takes one argument, returns true if it is null,
 // Or false, otherwise
 Element *isnull(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() == typeNil)
         return new Boolean(true);
@@ -452,7 +451,7 @@ Element *isnull(Context *context, List *args) {
 // Takes one argument, returns true if it is an atom,
 // Or false, otherwise
 Element *isatom(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() == typeAtom)
         return new Boolean(true);
@@ -463,8 +462,8 @@ Element *isatom(Context *context, List *args) {
 // Takes one argument, returns true if it is a list,
 // Or false, otherwise
 Element *islist(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    
+    Element *a = eval(context, new List(args->elements[0]));
+
     if (a->getExecType() == typeList)
         return new Boolean(true);
     else
@@ -474,8 +473,8 @@ Element *islist(Context *context, List *args) {
 // Takes two elements of type boolean,
 // Returns result of logical and as boolean
 Element *f_and(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != typeBoolean) {
         throw TypeMismatchException("and", toString(a->getExecType()), toString(typeBoolean));
@@ -491,8 +490,8 @@ Element *f_and(Context *context, List *args) {
 // Takes two elements of type boolean,
 // Returns result of logical or as boolean
 Element *f_or(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != typeBoolean) {
         throw TypeMismatchException("or", toString(a->getExecType()), toString(typeBoolean));
@@ -508,8 +507,8 @@ Element *f_or(Context *context, List *args) {
 // Takes two elements of type boolean,
 // Returns result of logical xor as boolean
 Element *f_xor(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
-    Element *b = eval(context, new List( args->elements[1] ));
+    Element *a = eval(context, new List(args->elements[0]));
+    Element *b = eval(context, new List(args->elements[1]));
 
     if (a->getExecType() != typeBoolean) {
         throw TypeMismatchException("xor", toString(a->getExecType()), toString(typeBoolean));
@@ -525,7 +524,7 @@ Element *f_xor(Context *context, List *args) {
 // Takes element of type boolean,
 // Returns its logical negation as boolean
 Element *f_not(Context *context, List *args) {
-    Element *a = eval(context, new List( args->elements[0] ));
+    Element *a = eval(context, new List(args->elements[0]));
 
     if (a->getExecType() != typeBoolean) {
         throw TypeMismatchException("not", toString(a->getExecType()), toString(typeBoolean));
@@ -544,7 +543,7 @@ Element *eval(Context *context, List *args) {
     // context->print();
     std::cout << "PASS1" << std::endl;
 
-    switch (operand->getExecType()){
+    switch (operand->getExecType()) {
 //        case typeAtom: {
 ////            std::string func_name = Atom::fromElement(args->elements[0])->identifier;
 ////
@@ -564,12 +563,11 @@ Element *eval(Context *context, List *args) {
             return operand;
         case typeList: {
             std::cout << "PASS2" << std::endl;
-            List* list = List::fromElement(operand);
-            if(list->elements[0]->getExecType() != typeAtom){
+            List *list = List::fromElement(operand);
+            if (list->elements[0]->getExecType() != typeAtom) {
                 // first argument is literal or another list
                 return list;
-            }
-            else{
+            } else {
                 // treat as a function call
 
                 std::cout << "PASS3" << std::endl;
@@ -579,14 +577,15 @@ Element *eval(Context *context, List *args) {
                 std::cout << "PASS4 " << func_name << std::endl;
                 Function *func = context->get(func_name);
 
-                if(func == nullptr){
+                if (func == nullptr) {
                     throw NoSuchFunctionException("eval", func_name);
                 }
 
                 // evaluate args and map to current context
-                if(!func->predefined) {
-                    for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
-                        Element *arg = eval(context, new List(*e));
+                for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
+                    Element *arg = *e;
+                    if(!func->predefined) {
+                        arg = eval(context, new List(arg));
                         if (arg->getExecType() == typeAtom) {
                             std::string arg_string = Atom::fromElement(arg)->identifier;
                             if (context->has(arg_string)) {
@@ -594,9 +593,10 @@ Element *eval(Context *context, List *args) {
                                 arg = static_cast<Function *>(arg)->eval(context, new List());
                             }
                         }
-                        std::cout << "GOIN TO PSUH" << std::endl;
-                        eval_args->push_back(arg);
                     }
+
+                    std::cout << "GOIN TO PSUH" << std::endl;
+                    eval_args->push_back(arg);
                 }
 
                 func->validate_args_number(eval_args->size());
