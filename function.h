@@ -22,13 +22,15 @@ protected:
     std::string name{};
     std::vector<std::string> *args;
     int args_number;
-    bool lambda{false};
     ExecutionType execType;
 
     Function(std::string name, std::vector<std::string> *args) :
             name(name), args(args), args_number(args->size()), execType(typeFunction) {};
 
 public:
+    bool predefined{false};
+    bool lambda{false};
+
     // Context here so that predefined functions can access it
     virtual Element *eval(Context *currContext, List *args) {
         return nullptr;
@@ -53,7 +55,9 @@ private:
 
 public:
     PredefinedFunction(std::string name, std::vector<std::string> *args, FunctionPointer handler) :
-            Function(name, args), handler(handler) {};
+            Function(name, args), handler(handler){
+        this->predefined = true;
+    };
 
     Element *eval(Context *currContext, List *args) override {
         validate_args_number(args->elements.size());

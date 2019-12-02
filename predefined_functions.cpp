@@ -576,24 +576,27 @@ Element *eval(Context *context, List *args) {
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
                 Elements *eval_args = new Elements();
 
-                // evaluate args and map to current context
-                for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
-                    Element* arg = eval(context, new List(*e));
-                    if(arg->getExecType() == typeAtom){
-                        std::string arg_string = Atom::fromElement(arg)->identifier;
-                        if(context->has(arg_string)){
-                            arg = context->get(arg_string);
-                            arg = static_cast<Function *>(arg)->eval(context, new List());
-                        }
-                    }
-                    std::cout << "GOIN TO PSUH" << std::endl;
-                    eval_args->push_back(arg);
-                }
                 std::cout << "PASS4 " << func_name << std::endl;
                 Function *func = context->get(func_name);
 
                 if(func == nullptr){
                     throw NoSuchFunctionException("eval", func_name);
+                }
+
+                // evaluate args and map to current context
+                if(!func->predefined) {
+                    for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
+                        Element *arg = eval(context, new List(*e));
+                        if (arg->getExecType() == typeAtom) {
+                            std::string arg_string = Atom::fromElement(arg)->identifier;
+                            if (context->has(arg_string)) {
+                                arg = context->get(arg_string);
+                                arg = static_cast<Function *>(arg)->eval(context, new List());
+                            }
+                        }
+                        std::cout << "GOIN TO PSUH" << std::endl;
+                        eval_args->push_back(arg);
+                    }
                 }
 
                 func->validate_args_number(eval_args->size());
