@@ -86,7 +86,7 @@ Element *prog(Context *context, List *args) {
     for (auto elem : args->elements) {
         std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
-        std::cout << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\n\n";         
+        std::cout << "\033[35m" << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\033[0m\n\n";         
     }
 
     return new Integer(0);
