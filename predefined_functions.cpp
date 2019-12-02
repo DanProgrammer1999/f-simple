@@ -566,13 +566,17 @@ Element *eval(Context *context, List *args) {
             std::cout << "PASS2" << std::endl;
             List* list = List::fromElement(operand);
             if(list->elements[0]->getExecType() != typeAtom){
-                // List or literal
+                // first argument is literal or another list
                 return list;
             }
             else{
+                // treat as a function call
+
                 std::cout << "PASS3" << std::endl;
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
                 Elements *eval_args = new Elements();
+
+                // evaluate args and map to current context
                 for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
                     Element* arg = eval(context, new List(*e));
                     if(arg->getExecType() == typeAtom){
@@ -580,6 +584,7 @@ Element *eval(Context *context, List *args) {
                         if(arg == nullptr){
                             throw NoSuchFunctionException("eval", Atom::fromElement(arg)->identifier);
                         }
+                        arg = static_cast<Function *>(arg)->eval(context, new List());
                     }
                     std::cout << "GOIN TO PSUH" << std::endl;
                     eval_args->push_back(arg);
