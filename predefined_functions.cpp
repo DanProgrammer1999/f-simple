@@ -540,9 +540,7 @@ Element *f_not(Context *context, List *args) {
 Element *eval(Context *context, List *args) {
     Element *operand = args->elements[0];
 
-    std::cout << "CONTEXT" << std::endl;
-    // context->print();
-    std::cout << "PASS1" << std::endl;
+    std::cout << "Start of eval" << std::endl;
 
     switch (operand->getExecType()) {
         case typeAtom: {
@@ -583,17 +581,19 @@ Element *eval(Context *context, List *args) {
                 // evaluate args and map to current context
                 for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
                     Element *arg = *e;
-                    if(!func->predefined) {
+                    if(!func->predefined) {                       
+                        std::cout << "Going to eval arg " << arg->toString() << std::endl;
                         arg = eval(context, new List(arg));
+                        std::cout << "\nGot " << arg->toString() << std::endl; 
                     }
 
-                    std::cout << "GOIN TO PSUH" << std::endl;
                     eval_args->push_back(arg);
                 }
-
+                
                 func->validate_args_number(eval_args->size());
-                std::cout << "PASS5" << std::endl;
+                std::cout << "Attempting to make function call" << std::endl;
                 auto res = func->eval(context, new List(eval_args));
+                std::cout << "Function " << func_name << " returned " << res->toString() << std::endl;
 
                 return res;
             }

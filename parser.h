@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 
 static int tabPadding = 0;
@@ -52,6 +53,7 @@ protected:
 
 public:
     virtual void print() {}
+    virtual std::string toString(){ return "<Something else>";};
     ExecutionType getExecType()
     {
         return execType;
@@ -76,6 +78,15 @@ public:
         }
         tabPadding--;
     }
+
+    std::string toString() {
+        std::stringstream output;
+        output << "<Program>" << std::endl;
+        for(auto elem = elements.begin(); elem != elements.end(); ++elem){
+            output << "\t" << (*elem)->toString() << std::endl;
+        }
+        return output.str();
+    }
 };
 
 class Atom : public Element
@@ -99,6 +110,10 @@ public:
         std::cout << std::setw(tabPadding * 6) << "|---"
                   << " ATOM->" << identifier << std::endl;
         tabPadding--;
+    }
+
+    std::string toString() override {
+        return std::string("<Atom> ") + identifier;
     }
 
     static Atom *fromElement(Element *element){
@@ -168,6 +183,10 @@ public:
         tabPadding--;
     }
 
+    std::string toString() override{
+        return std::string("<Integer> ") + std::to_string(value);
+    }
+
     static Integer *fromElement(Element *element){
         if(element->getExecType() != typeInteger){
             return nullptr;
@@ -199,6 +218,10 @@ public:
         tabPadding--;
     }
 
+    std::string toString() override{
+        return std::string("<Real> ") + std::to_string(value);
+    }
+
     static Real *fromElement(Element *element){
         if(element->getExecType() != typeReal){
             return nullptr;
@@ -226,8 +249,12 @@ public:
         tabPadding--;
     }
 
+    std::string toString() override{
+        return std::string("<Boolean> ") + std::to_string(value);
+    }
+
     static Boolean *fromElement(Element *element){
-        if(element->getExecType() != typeInteger){
+        if(element->getExecType() != typeBoolean){
             return nullptr;
         }
 
@@ -249,6 +276,10 @@ public:
         std::cout << "|---"
                   << " NULL" << std::endl;
         tabPadding--;
+    }
+
+    std::string toString() override{
+        return std::string("<Nil> ");
     }
 };
 
@@ -284,6 +315,18 @@ public:
             elements.at(i)->print();
         }
         tabPadding--;
+    }
+
+    std::string toString() override{
+        std::stringstream message_stream;
+        message_stream << "<List> (";
+        for(auto elem = elements.begin(); elem != elements.end(); ++elem){
+            message_stream << (*elem)->toString() << "; ";
+        }
+
+        message_stream << ")";
+
+        return message_stream.str();
     }
 
     static List *fromElement(Element *element){
