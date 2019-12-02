@@ -61,7 +61,7 @@ public:
 
     Element *eval(Context *currContext, List *args) override {
         validate_args_number(args->elements.size());
-        std::cout << "CALLED PREDEFINED FUNC\n";
+        std::cout << "Called predefined function " << this->name << std::endl;
         return this->handler(currContext, args);
     }
 };

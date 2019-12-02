@@ -319,7 +319,7 @@ public:
 
     std::string toString() override{
         std::stringstream message_stream;
-        message_stream << "<List> (";
+        message_stream << "<List> ( ";
         for(auto elem = elements.begin(); elem != elements.end(); ++elem){
             message_stream << (*elem)->toString() << "; ";
         }

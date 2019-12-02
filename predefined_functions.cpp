@@ -15,12 +15,13 @@ Element *setq(Context *context, List *args) {
     std::string name = Atom::fromElement(args->elements[0])->identifier;
 
     Element *to_set = args->elements[1];
+    std::cout << "[setq] Trying to evaluate arg " << to_set->toString() << std::endl; 
     to_set = eval(context, new List(to_set));
     auto *body = new std::vector<Element *>{to_set};
     Function *const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
-    auto res = context->set(name, const_func);
+    context->set(name, const_func);
 
-    return res;
+    return new Nil();
 }
 
 
@@ -77,13 +78,15 @@ Element *lambda(Context *context, List *args) {
 // Sequentially evaluate atoms using given context
 // Do we need it ???
 Element *prog(Context *context, List *args) {
+    std::cout << "Program starts\n\n\n";
     if (args->elements[0]->getExecType() != typeList) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
 
     for (auto elem : args->elements) {
+        std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
-        // TODO maybe print result?
+        std::cout << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\n\n";         
     }
 
     return new Integer(0);
@@ -540,7 +543,8 @@ Element *f_not(Context *context, List *args) {
 Element *eval(Context *context, List *args) {
     Element *operand = args->elements[0];
 
-    std::cout << "Start of eval" << std::endl;
+    std::cout << "\nStart of eval" << std::endl;
+    std::cout << "Operand: " << operand->toString() << std::endl;
 
     switch (operand->getExecType()) {
         case typeAtom: {
@@ -556,6 +560,7 @@ Element *eval(Context *context, List *args) {
         case typeBoolean:
         case typeInteger:
         case typeReal:
+            std::cout << "\nReturning as is" << std::endl;
             return operand;
         case typeList: {
             std::cout << "Eval got list" << std::endl;
@@ -593,7 +598,7 @@ Element *eval(Context *context, List *args) {
                 func->validate_args_number(eval_args->size());
                 std::cout << "Attempting to make function call" << std::endl;
                 auto res = func->eval(context, new List(eval_args));
-                std::cout << "Function " << func_name << " returned " << res->toString() << std::endl;
+                std::cout << "Function " << func_name << " returned " << res->toString() << "\n\n";
 
                 return res;
             }

@@ -99,8 +99,8 @@ int main(int argc, char **argv)
 			if (no_err) {
 				std::cout << root << std::endl;
 			}
-			auto res = eval(context, root);
-			res->print();
+			auto res = prog(context, root);
+			std::cout << "\nProgram returned " << res->toString() << std::endl;
 			// clearerr(stdin);
 			rewind(stdin);
 		} catch (const std::exception& e) {
