@@ -2,16 +2,18 @@
 	#include "parser.h"
 	#include "context.h"
 	#include "predefined_functions.h"
+	#include<stdio.h>
+	#include<string.h>
 	#include <iostream>
 	#include <string>
 
-	Program* root;
+	List* root;
 	Context* global = new Context();
 	bool no_err = true;
 
 	extern "C" int yylex();
 	extern "C" int yyparse();
-	void yyerror(const char* s) { printf("ERROR: %sn", s); no_err = false; }
+	void yyerror(const char* s) { printf("ERROR: %s\n", s); no_err = false; }
 %}
 
 %union {
@@ -22,7 +24,7 @@
 	bool boolean;
 	int integer;
 
-	Program* program;
+	List* program;
 	Element* element;
 	Literal* literal;
 	Elements* elements;
@@ -50,7 +52,7 @@
 %%
 
 Program
-	: Elements END {root = new Program(*$1);}
+	: Elements END {root = new List($1); Element* calculated = eval(global, new List(root)); calculated->print();}
 	;
 
 Elements
@@ -76,22 +78,32 @@ Literal
 	;
 
 List
-	: LPARENT	           RPARENT {$$ = new List(); $$->print();}
-	| LPARENT      	  Elements RPARENT {$$ = new List($2); Element* calced = eval(global, new List($$)); calced->print();}
-	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);Element* calced = eval(global, new List($$));}
-	| KEYWORD Elements {Keyword *keyword = new Keyword("quote"); $$ = new PredefinedList(keyword, *$2); Element* calced = eval(global, new List($$));}
+	: LPARENT	           RPARENT {$$ = new List();}
+	| LPARENT      	  Elements RPARENT {$$ = new List($2);}
+	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);}
+	| KEYWORD Elements {Keyword *keyword = new Keyword("quote"); $$ = new PredefinedList(keyword, *$2);}
 	;
 
 %%
 
 int main(int argc, char **argv)
 {
-	yyparse();
-	if (!no_err) {
-		return -1;
+	bool interactive = false;
+	if (argc > 1 && strcmp(argv[1], "-i") == 0) {
+		interactive = true;
 	}
-
-	std::cout << root << std::endl;
+	do {
+		try {
+			yyparse();
+			if (no_err) {
+				std::cout << root << std::endl;
+			}
+			// clearerr(stdin);
+			rewind(stdin);
+		} catch (const std::exception& e) {
+			// clearerr(stdin);
+		}
+	} while (interactive);
     
     return 0;
 }

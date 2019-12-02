@@ -71,7 +71,7 @@ public:
     char peek() { return m_start; }
     char get()
     {
-        m_start = getchar();
+        m_start = getc(stdin);
         return m_start;
     }
     void reset() { ungetc(m_start, stdin); }
@@ -201,6 +201,7 @@ Token Lexer::next()
     switch (peek())
     {
     case EOF:
+        std::cout << "Got EOF\n";
         return atom(Token::Type::EndOfCode);
     case 'a':
     case 'b':
@@ -475,7 +476,9 @@ int yylex()
 
     if (token.type() == Token::Type::EndOfCode)
     {
-        clearerr(stdin);
+        rewind(stdin);
+        fseek(stdin, 0, SEEK_SET);
+        freopen("/dev/tty", "rw", stdin);
         return -1;
     }
 
