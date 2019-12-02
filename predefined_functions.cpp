@@ -14,9 +14,11 @@ Element *setq(Context *context, List *args) {
     }
     std::string name = Atom::fromElement(args->elements[0])->identifier;
 
-    //TODO we should probably evaluate args before assignment
-    Function* toSet = (Function *)args->elements[1];
-    auto res = context->set(name, toSet);
+    Element *to_set = args->elements[1];
+    to_set = eval(context, new List(to_set));
+    auto *body = new std::vector<Element*>{to_set};
+    Function* const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
+    auto res = context->set(name, const_func);
 
     return res;
 }

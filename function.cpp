@@ -2,7 +2,7 @@
 
 Element* CustomFunction::eval(Context *currContext, List *args) {
         if (args->elements.size() != this->args_number) {
-            throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
+            throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
         }
         auto local_context = currContext->copy();
         // Context MUST NOT be used here, need it because of override
