@@ -79,6 +79,7 @@ List
 	: LPARENT	           RPARENT {$$ = new List(); $$->print();}
 	| LPARENT      	  Elements RPARENT {$$ = new List($2); Element* calced = eval(global, new List($$)); calced->print();}
 	| LPARENT KEYWORD Elements RPARENT {Keyword *keyword = new Keyword(*$2); $$ = new PredefinedList(keyword, *$3);Element* calced = eval(global, new List($$));}
+	| KEYWORD Elements {Keyword *keyword = new Keyword("quote"); $$ = new PredefinedList(keyword, *$2); Element* calced = eval(global, new List($$));}
 	;
 
 %%
