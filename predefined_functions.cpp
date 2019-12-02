@@ -580,10 +580,11 @@ Element *eval(Context *context, List *args) {
                 for(auto e = list->elements.begin() + 1; e != list->elements.end(); e++){
                     Element* arg = eval(context, new List(*e));
                     if(arg->getExecType() == typeAtom){
-                        arg = context->get(Atom::fromElement(arg)->identifier);
-                        if(arg == nullptr){
+                        std::string arg_string = Atom::fromElement(arg)->identifier;
+                        if(!context->has(arg_string)){
                             throw NoSuchFunctionException("eval", Atom::fromElement(arg)->identifier);
                         }
+                        arg = context->get(arg_string);
                         arg = static_cast<Function *>(arg)->eval(context, new List());
                     }
                     std::cout << "GOIN TO PSUH" << std::endl;
