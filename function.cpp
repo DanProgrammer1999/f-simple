@@ -16,6 +16,6 @@ Element* CustomFunction::eval(Context *currContext, List *args) {
             local_context->set((*(this->args))[i], arg);
         }
 
-        auto res = local_context->get("eval")->eval(local_context, new List(this->body));
+        auto res = local_context->get("eval")->eval(local_context, this->body);
         return res;
     }

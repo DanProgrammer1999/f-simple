@@ -123,17 +123,18 @@ Element *f_while(Context *context, List *args) {
     while (true) {
         Element *eval_res = eval(context, new List(args->elements[0]));
         Boolean *cond_res = toBool(eval_res);
-        List *body = new List(args->elements[2]);
+        List *body = new List(args->elements[1]);
 
         if (cond_res == nullptr) {
-            context->set("_break", (Function *)f_false);
             throw TypeMismatchException("while", toString(eval_res->getExecType()), toString(typeBoolean));
         }
-        if (!cond_res->value || ((Boolean *)context->get("f_break")->eval(context, new List{}))->value) {
+
+        if (!cond_res->value || ((Boolean *)context->get("_break")->eval(context, new List{}))->value) {
+            context->set("_break", (Function *)f_false);
             return new Nil();
         }
 
-        eval(context, body);
+        prog(context, body);
     }
 }
 

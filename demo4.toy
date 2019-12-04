@@ -1,0 +1,17 @@
+// Testing loops
+
+(setq b 1)
+(setq b (plus b 1))
+(setq b (plus b 1))
+(setq b (plus b 1))
+(setq b (plus b 1))
+
+(setq a 1)
+(setq x 2)
+(while (less a 5) (
+    (setq a (plus a 1))
+    (setq x (times x 2))
+))
+
+(setq c (equal a b))
+(c)
