@@ -118,9 +118,10 @@ Element *f_while(Context *context, List *args) {
         List *body = new List(args->elements[2]);
 
         if (cond_res == nullptr) {
+            context->set("_break", (Function *)f_false);
             throw TypeMismatchException("while", toString(eval_res->getExecType()), toString(typeBoolean));
         }
-        if (!cond_res->value) {
+        if (!cond_res->value || ((Boolean *)context->get("f_break")->eval(context, new List{}))->value) {
             return new Nil();
         }
 
@@ -131,15 +132,15 @@ Element *f_while(Context *context, List *args) {
 // Takes one element
 // and returns it as the result of function (only used in functions)
 Element *f_return(Context *context, List *args) {
-    // [TODO: Evaluation]
-    // Probably in function loop, not here
+    Element *res_to_return = eval(context, new List(args->elements[0]));
+    // [TODO: Break function execution]
 }
 
 // Do not has any arguments,
 // Just interupts a loop
 Element *f_break(Context *context, List *args) {
-    // [TODO: Evaluation]
-    // Probably in function loop, not here
+    context->set("_break", (Function *)f_true);
+    return new Nil();
 }
 
 // Takes two real or int elements,
@@ -670,6 +671,7 @@ std::map<std::string, Function *> getDefaultFunctions() {
     res["nil"] = new PredefinedFunction("nil", new std::vector<std::string>{}, nil);
     res["true"] = new PredefinedFunction("true", new std::vector<std::string>{}, f_true);
     res["false"] = new PredefinedFunction("false", new std::vector<std::string>{}, f_false);
+    res["_break"] = new PredefinedFunction("_break", new std::vector<std::string>{}, f_false);
 
     return res;
 }
