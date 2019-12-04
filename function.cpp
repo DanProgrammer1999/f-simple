@@ -10,8 +10,7 @@ Element* CustomFunction::eval(Context *currContext, List *args) {
 
         for (int i = 0; i < this->args->size(); i++) {
             auto empty_args = new std::vector<std::string>();
-            auto value = new std::vector<Element *>{args->elements[i]};
-            std::cout << "HEreee" << (*value)[0] << std::endl;
+            auto value = new List(args->elements[i]);
             auto arg = new CustomFunction((*(this->args))[i], empty_args,
                                           value, local_context);
             local_context->set((*(this->args))[i], arg);

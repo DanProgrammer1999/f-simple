@@ -77,8 +77,8 @@ public:
 
         this->body = body;
         std::cout << "[CustomFunction()] with body:\n";
-        for(Element *elem : this.body){
-            std::cout << elem.toString() << std::endl;
+        for(Element *elem : this->body->elements){
+            std::cout << elem->toString() << std::endl;
         }
         std::cout << "<<end of body>>";
     };
@@ -88,7 +88,7 @@ public:
 
 class LambdaFunction : public CustomFunction {
 public:
-    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext) :
+    LambdaFunction(std::vector<std::string> *args, List *body, Context *localContext) :
             CustomFunction("<lambda_func>", args, body, localContext) {
         this->lambda = true;
     };
