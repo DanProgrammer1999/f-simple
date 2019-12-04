@@ -42,9 +42,10 @@ public:
         }
     }
 
-    void print() override {
+    std::string toString() override {
         std::stringstream res;
         res << "<Function " << this->name << "(" << this->args << ")";
+        return res.str();
     }
 };
 
@@ -61,18 +62,26 @@ public:
 
     Element *eval(Context *currContext, List *args) override {
         validate_args_number(args->elements.size());
-        std::cout << "CALLED PREDEFINED FUNC\n";
+        std::cout << "Called predefined function " << this->name << std::endl;
         return this->handler(currContext, args);
     }
 };
 
 class CustomFunction : public Function {
 protected:
-    std::vector<Element *> *body;
+    List *body;
     Context *localContext;
 public:
-    CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
-                   Context *localContext) : Function(name, args), body(body), localContext(localContext) {};
+    CustomFunction(std::string name, std::vector<std::string> *args, List *body,
+                   Context *localContext) : Function(name, args), localContext(localContext) {
+
+        this->body = body;
+        std::cout << "[CustomFunction()] with body:\n";
+        for(Element *elem : this.body){
+            std::cout << elem.toString() << std::endl;
+        }
+        std::cout << "<<end of body>>";
+    };
 
     Element *eval(Context *currContext, List *args) override;
 };

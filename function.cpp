@@ -7,11 +7,13 @@ Element* CustomFunction::eval(Context *currContext, List *args) {
         auto local_context = currContext->copy();
         // Context MUST NOT be used here, need it because of override
         // arguments are already eval'd
+
         for (int i = 0; i < this->args->size(); i++) {
-            std::vector<std::string> *temp1 = new std::vector<std::string>();
-            std::vector<Element *> *temp2 = new std::vector<Element *>{args->elements[i]};
-            auto arg = new CustomFunction((*(this->args))[i], temp1,
-                                          temp2, local_context);
+            auto empty_args = new std::vector<std::string>();
+            auto value = new std::vector<Element *>{args->elements[i]};
+            std::cout << "HEreee" << (*value)[0] << std::endl;
+            auto arg = new CustomFunction((*(this->args))[i], empty_args,
+                                          value, local_context);
             local_context->set((*(this->args))[i], arg);
         }
 

@@ -15,12 +15,13 @@ Element *setq(Context *context, List *args) {
     std::string name = Atom::fromElement(args->elements[0])->identifier;
 
     Element *to_set = args->elements[1];
+    std::cout << "[setq] Trying to evaluate arg " << to_set->toString() << std::endl; 
     to_set = eval(context, new List(to_set));
-    auto *body = new std::vector<Element *>{to_set};
+    auto body = new List(to_set);
     Function *const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
-    auto res = context->set(name, const_func);
+    context->set(name, const_func);
 
-    return res;
+    return new Nil();
 }
 
 
@@ -35,21 +36,25 @@ Element *func(Context *context, List *args) {
         throw TypeMismatchException("func", toString(args->elements[1]->getExecType()), toString(typeList));
     }
 
-    std::string name = Atom::fromElement(args->elements[0])->identifier;
-    std::vector<std::string> func_args;
-    std::vector<Element *> body = ((List *) args->elements[2])->elements;
+    if (args->elements[2]->getExecType() != typeList) {
+        throw TypeMismatchException("func", toString(args->elements[2]->getExecType()), toString(typeList));
+    }
 
-    for (Element *arg : ((List *) args->elements[1])->elements) {
+    std::string name = Atom::fromElement(args->elements[0])->identifier;
+    std::vector<std::string> *func_args = new std::vector<std::string>();
+    Elements body = List::fromElement(args->elements[2])->elements;
+
+    for (Element *arg : List::fromElement(args->elements[1])->elements) {
         if (arg->getExecType() != typeAtom) {
             throw TypeMismatchException("func", toString(arg->getExecType()), toString(typeAtom));
         }
-        func_args.push_back(Atom::fromElement(arg)->identifier);
-    }
+        func_args->push_back(Atom::fromElement(arg)->identifier);
+    }   
 
-    auto function = new CustomFunction(name, &func_args, &body, context);
-    auto res = context->set(name, function);
+    auto function = new CustomFunction(name, func_args, &body, context);
+    context->set(name, function);
 
-    return res;
+    return new Nil();
 }
 
 // Takes two elements (List, Element): (args, body)
@@ -77,13 +82,15 @@ Element *lambda(Context *context, List *args) {
 // Sequentially evaluate atoms using given context
 // Do we need it ???
 Element *prog(Context *context, List *args) {
+    std::cout << "Program starts\n\n\n";
     if (args->elements[0]->getExecType() != typeList) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
 
     for (auto elem : args->elements) {
+        std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
-        // TODO maybe print result?
+        std::cout << "\033[35m" << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\033[0m\n\n";         
     }
 
     return new Integer(0);
@@ -94,6 +101,7 @@ Element *prog(Context *context, List *args) {
 Element *cond(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Boolean *cond_obj = toBool(a);
+
     if (cond_obj == nullptr) {
         throw TypeMismatchException("cond", toString(a->getExecType()), toString(typeBoolean));
     }
@@ -540,9 +548,8 @@ Element *f_not(Context *context, List *args) {
 Element *eval(Context *context, List *args) {
     Element *operand = args->elements[0];
 
-    std::cout << "CONTEXT" << std::endl;
-    // context->print();
-    std::cout << "PASS1" << std::endl;
+    std::cout << "\nStart of eval" << std::endl;
+    std::cout << "Operand: " << operand->toString() << std::endl;
 
     switch (operand->getExecType()) {
         case typeAtom: {
@@ -558,46 +565,49 @@ Element *eval(Context *context, List *args) {
         case typeBoolean:
         case typeInteger:
         case typeReal:
+            std::cout << "\nReturning as is" << std::endl;
             return operand;
         case typeList: {
-            std::cout << "PASS2" << std::endl;
+            std::cout << "Eval got list" << std::endl;
             List *list = List::fromElement(operand);
             if (list->elements[0]->getExecType() != typeAtom) {
                 // first argument is literal or another list
+                std::cout << "List not a func call, returning" << std::endl;
                 return list;
             } else {
                 // treat as a function call
+                std::cout << "List is a func call" << std::endl;
 
-                std::cout << "PASS3" << std::endl;
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
-                Elements *eval_args = new Elements();
-
-                std::cout << "PASS4 " << func_name << std::endl;
-                Function *func = context->get(func_name);
-
-                if (func == nullptr) {
+                std::cout << "Func name is " << func_name << std::endl;
+                if(!context->get(func_name)){
                     throw NoSuchFunctionException("eval", func_name);
                 }
+                Function *func = context->get(func_name);
 
+                Elements *eval_args = new Elements();
                 // evaluate args and map to current context
                 for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
                     Element *arg = *e;
-                    if(!func->predefined) {
+                    if(!func->predefined) {                       
+                        std::cout << "Going to eval arg " << arg->toString() << std::endl;
                         arg = eval(context, new List(arg));
+                        std::cout << "\nGot " << arg->toString() << std::endl; 
                     }
 
-                    std::cout << "GOIN TO PSUH" << std::endl;
                     eval_args->push_back(arg);
                 }
-
+                
                 func->validate_args_number(eval_args->size());
-                std::cout << "PASS5" << std::endl;
+                std::cout << "Attempting to make function call to " << func->toString() << std::endl;
                 auto res = func->eval(context, new List(eval_args));
+                std::cout << "Function " << func_name << " returned " << res->toString() << "\n\n";
 
                 return res;
             }
         }
         default:
+            std::cout << "Not implemented yet" << std::endl;
             return nullptr;
     }
 }
