@@ -42,7 +42,7 @@ Element *func(Context *context, List *args) {
 
     std::string name = Atom::fromElement(args->elements[0])->identifier;
     std::vector<std::string> *func_args = new std::vector<std::string>();
-    Elements body = List::fromElement(args->elements[2])->elements;
+    List* body = List::fromElement(args->elements[2]);
 
     for (Element *arg : List::fromElement(args->elements[1])->elements) {
         if (arg->getExecType() != typeAtom) {
@@ -51,7 +51,7 @@ Element *func(Context *context, List *args) {
         func_args->push_back(Atom::fromElement(arg)->identifier);
     }   
 
-    auto function = new CustomFunction(name, func_args, &body, context);
+    auto function = new CustomFunction(name, func_args, body, context);
     context->set(name, function);
 
     return new Nil();
@@ -64,7 +64,7 @@ Element *lambda(Context *context, List *args) {
         throw TypeMismatchException("lambda", toString(args->elements[0]->getExecType()), toString(typeList));
     }
     std::vector<std::string> func_args;
-    std::vector<Element *> body = ((List *) args->elements[2])->elements;
+    List *body = List::fromElement(args->elements[2]);
 
     for (Element *arg : ((List *) args->elements[1])->elements) {
         if (arg->getExecType() != typeAtom) {
@@ -73,7 +73,7 @@ Element *lambda(Context *context, List *args) {
         func_args.push_back(Atom::fromElement(arg)->identifier);
     }
 
-    Function *function = new LambdaFunction(&func_args, &body, context);
+    Function *function = new LambdaFunction(&func_args, body, context);
 
     return function;
 }
