@@ -48,12 +48,7 @@ public:
         return newContext;
     }
 
-    void print() {
-        for(auto it = this->functions.cbegin(); it != this->functions.cend(); ++it)
-        {
-            std::cout << it->first << " " << it->second << "\n";
-        }
-    }
+    void print();
 };
 
 

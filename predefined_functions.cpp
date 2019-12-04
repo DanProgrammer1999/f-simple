@@ -17,7 +17,7 @@ Element *setq(Context *context, List *args) {
     Element *to_set = args->elements[1];
     std::cout << "[setq] Trying to evaluate arg " << to_set->toString() << std::endl; 
     to_set = eval(context, new List(to_set));
-    auto *body = new std::vector<Element *>{to_set};
+    auto body = new List(to_set);
     Function *const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
     context->set(name, const_func);
 
@@ -36,21 +36,25 @@ Element *func(Context *context, List *args) {
         throw TypeMismatchException("func", toString(args->elements[1]->getExecType()), toString(typeList));
     }
 
-    std::string name = Atom::fromElement(args->elements[0])->identifier;
-    std::vector<std::string> func_args;
-    std::vector<Element *> body = ((List *) args->elements[2])->elements;
+    if (args->elements[2]->getExecType() != typeList) {
+        throw TypeMismatchException("func", toString(args->elements[2]->getExecType()), toString(typeList));
+    }
 
-    for (Element *arg : ((List *) args->elements[1])->elements) {
+    std::string name = Atom::fromElement(args->elements[0])->identifier;
+    std::vector<std::string> *func_args = new std::vector<std::string>();
+    Elements body = List::fromElement(args->elements[2])->elements;
+
+    for (Element *arg : List::fromElement(args->elements[1])->elements) {
         if (arg->getExecType() != typeAtom) {
             throw TypeMismatchException("func", toString(arg->getExecType()), toString(typeAtom));
         }
-        func_args.push_back(Atom::fromElement(arg)->identifier);
-    }
+        func_args->push_back(Atom::fromElement(arg)->identifier);
+    }   
 
-    auto function = new CustomFunction(name, &func_args, &body, context);
-    auto res = context->set(name, function);
+    auto function = new CustomFunction(name, func_args, &body, context);
+    context->set(name, function);
 
-    return res;
+    return new Nil();
 }
 
 // Takes two elements (List, Element): (args, body)
@@ -575,14 +579,12 @@ Element *eval(Context *context, List *args) {
 
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
                 std::cout << "Func name is " << func_name << std::endl;
-
-                Elements *eval_args = new Elements();
-
                 if(!context->get(func_name)){
                     throw NoSuchFunctionException("eval", func_name);
                 }
                 Function *func = context->get(func_name);
 
+                Elements *eval_args = new Elements();
                 // evaluate args and map to current context
                 for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
                     Element *arg = *e;
@@ -596,7 +598,7 @@ Element *eval(Context *context, List *args) {
                 }
                 
                 func->validate_args_number(eval_args->size());
-                std::cout << "Attempting to make function call" << std::endl;
+                std::cout << "Attempting to make function call to " << func->toString() << std::endl;
                 auto res = func->eval(context, new List(eval_args));
                 std::cout << "Function " << func_name << " returned " << res->toString() << "\n\n";
 
