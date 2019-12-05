@@ -581,7 +581,7 @@ Element *eval(Context *context, List *args) {
         case typeList: {
             std::cout << "Eval got list" << std::endl;
             List *list = List::fromElement(operand);
-            if (list->elements[0]->getExecType() != typeAtom) {
+            if (list->elements.size() == 0 || list->elements[0]->getExecType() != typeAtom) {
                 // first argument is literal or another list
                 std::cout << "List not a func call, returning" << std::endl;
                 return list;
