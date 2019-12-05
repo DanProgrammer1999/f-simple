@@ -201,7 +201,6 @@ Token Lexer::next()
     switch (peek())
     {
     case EOF:
-        std::cout << "Got EOF\n";
         return atom(Token::Type::EndOfCode);
     case 'a':
     case 'b':

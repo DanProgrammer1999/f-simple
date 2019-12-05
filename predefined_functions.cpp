@@ -1,6 +1,8 @@
 #include "predefined_functions.h"
 #include <iostream>
 
+static int output_padding = 0;
+
 Element *quote(Context *context, List *args) {
     // Return the argument itself
     return args->elements.front();
@@ -89,26 +91,33 @@ Element *lambda(Context *context, List *args) {
 // Sequentially evaluate atoms using given context
 // Do we need it ???
 Element *prog(Context *context, List *args) {
-    std::cout << "Program starts\n\n\n";
+    Element *res = new Integer(0);
     if (args->elements[0]->getExecType() != typeList) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
+    std::cout << std::setw(output_padding*4) << "";
+    std::cout << "prog (complex expression) is called with body\n";
     args->elements[0]->print();
+    std::cout << "\n";
 
     List *body = List::fromElement(args->elements[0]);
     for (auto elem : body->elements) {
-        std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
-        auto res = eval(context, new List(elem));
+        output_padding++;
+        res = eval(context, new List(elem));
         
         auto bool_elem = Boolean::fromElement(context->get("_return")->eval(context, new List()));
         if(bool_elem->value){
             context->set("_return", (Function *)f_false);
             return res;
         }
-        std::cout << "\033[35m" << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\033[0m\n\n";         
+        std::cout << std::setw(output_padding*4) << "";
+        std::cout << "\033[35m" << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\033[0m\n";         
     }
 
-    return new Integer(0);
+    output_padding--;
+    std::cout << std::setw(output_padding*4) << "";
+    std::cout << "prog finished with result " << res->toString() << std::endl;
+    return res;
 }
 
 Element *f_return(Context *context, List *args){
@@ -249,7 +258,6 @@ Element *divide(Context *context, List *args) {
 // Takes list, returns its first element
 Element *head(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
-    std::cout << "HEAD ARGS" << std::endl;
     args->print();
 
     if (a->getExecType() != typeList) {
@@ -567,32 +575,41 @@ Element *f_not(Context *context, List *args) {
 Element *eval(Context *context, List *args) {
     Element *operand = args->elements[0];
 
-    std::cout << "\nStart of eval" << std::endl;
-    std::cout << "Operand: " << operand->toString() << std::endl;
+    std::cout << std::setw(output_padding*4) << "";
+    std::cout << "Eval called with operand (first element): " << operand->toString() << std::endl;
+    output_padding++;
 
     switch (operand->getExecType()) {
         case typeAtom: {
             std::string func_name = Atom::fromElement(args->elements[0])->identifier;
 
             if(context->has(func_name)){
-                return context->get(func_name)->eval(context, new List());
+                auto res = context->get(func_name)->eval(context, new List());
+                output_padding--;
+                std::cout << std::setw(output_padding * 4) << "";
+                std::cout << "Atom " << func_name << " evaluates to " << res->toString() << "\n\n";  
+                return res;
             }
-
+            output_padding--;
+            std::cout << std::setw(output_padding * 4) << "";
+            std::cout << "Atom " << func_name << " not finding in context, returning\n\n";
             return operand;
         }
         case typeList: {
-            std::cout << "Eval got list" << std::endl;
+            // std::cout << "Eval got list" << std::endl;
             List *list = List::fromElement(operand);
             if (list->elements.size() == 0 || list->elements[0]->getExecType() != typeAtom) {
                 // first argument is literal or another list
-                std::cout << "List not a func call, returning" << std::endl;
+                output_padding--;
+                std::cout << std::setw(output_padding * 4) << "";
+                std::cout << "List not a func call, returning " << list->toString() << "\n\n";
                 return list;
             } else {
                 // treat as a function call
-                std::cout << "List is a func call" << std::endl;
-
                 std::string func_name = Atom::fromElement(list->elements[0])->identifier;
-                std::cout << "Func name is " << func_name << std::endl;
+                std::cout << std::setw(output_padding * 4) << "";
+                std::cout << "List is a call to function " << func_name << std::endl;
+
                 if(!context->get(func_name)){
                     throw NoSuchFunctionException("eval", func_name);
                 }
@@ -601,10 +618,10 @@ Element *eval(Context *context, List *args) {
                 Elements *eval_args = new Elements();
                 eval_args->insert(eval_args->begin(), list->elements.begin() + 1, list->elements.end());
                 
-                std::cout << "Attempting to make function call to " << func->toString() << std::endl;
                 auto res = func->eval(context, new List(eval_args));
-                std::cout << "Function " << func_name << " returned " << res->toString() << "\n\n";
-
+                output_padding--;
+                std::cout << std::setw(output_padding * 4) << "";
+                std::cout << "Evaluated function " << func_name << " and returning " << res->toString() << "\n\n";
                 return res;
             }
         }
@@ -614,7 +631,9 @@ Element *eval(Context *context, List *args) {
         case typeFunction:
         case typeReal:
         default:
-            std::cout << "\nReturning as is" << std::endl;
+            output_padding--;
+            std::cout << std::setw(output_padding * 4) << "";
+            std::cout << "Nothing to evaluate, returning " << operand->toString() << "\n\n";
             return operand;
     }
 }

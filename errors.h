@@ -15,6 +15,10 @@ public:
     const char *what() const throw() override {
         return this->message.c_str();
     }
+
+    const std::string toString() {
+        return this->message;
+    }
 };
 
 class CustomException : SemanticException {

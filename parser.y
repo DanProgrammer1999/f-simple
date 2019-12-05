@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		try {
 			yyparse();
 			if (no_err) {
-				std::cout << root << std::endl;
+				// std::cout << root << std::endl;
 				Element* res = prog(global, new List(root)); 
 				std::cout << "\nProgram returned " << res->toString() << std::endl;
 			} else {

@@ -69,7 +69,6 @@ public:
             std::cout << "Predefined function has incorrect number of args: " << args->toString() << "\n";
             throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
         }        
-        std::cout << "Called predefined function " << this->name << std::endl;
         return this->handler(currContext, args);
     }
 };
