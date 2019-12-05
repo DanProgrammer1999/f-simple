@@ -1,14 +1,16 @@
 // Calculates approx sqrt (with 0.01 accuracy)
 (func Sqrt(x)
     ( prog
-        (setq sqrt 0.00)
         (
-            while (less (times sqrt sqrt) x)
+            (setq sqrt 0.00)
             (
-                (setq sqrt (plus sqrt 0.01))
+                while (less (times sqrt sqrt) x)
+                (
+                    (setq sqrt (plus sqrt 0.01))
+                )
             )
+            (return sqrt)
         )
-        (return sqrt)
     )
 )
 

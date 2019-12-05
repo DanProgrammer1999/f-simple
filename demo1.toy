@@ -6,7 +6,7 @@
                 (
                     cond
                     (equal count 0)
-                    b
+                    (b)
                     (FibIter (plus a b) a (minus count 1))
                 )
             )
@@ -17,16 +17,19 @@
 
 // Returns list of n Fibbonacci numbers (from 1)
 (func Fibonacci(n)
-    (
-        (setq res ())
-        (setq i n)
-        (while (nonequal i 0)
+    ( prog
+        (
+            (setq res ())
+            (setq i n)
+            (while (nonequal i 0)
             (
                 (cons (Fibbo i) res)
                 (minus i 1)
             )
+
+            )
+            (return res)
         )
-        (return res)
     )
 )
 
