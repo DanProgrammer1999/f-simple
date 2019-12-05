@@ -17,6 +17,6 @@ Element* CustomFunction::eval(Context *currContext, List *args) {
         }
         std::cout << "[Custom function] Evaluated arguments and added to context\n";
         
-        auto res = local_context->get("prog")->eval(local_context, this->body);
+        auto res = local_context->get("eval")->eval(local_context, this->body);
         return res;
     }
