@@ -27,5 +27,5 @@
 // TODO Print b4 and b5 [should be false and true]
 
 // Checking eval() functionality
-( eval b )
+( 'b )
 // TODO Print b [should be 3]

@@ -647,6 +647,7 @@ std::map<std::string, Function *> getDefaultFunctions() {
     std::map<std::string, Function *> res;
     // Special forms, keyword functions
     res["quote"] = new PredefinedFunction("quote", new std::vector<std::string>{"element"}, quote);
+    res["\'"] = new PredefinedFunction("quote", new std::vector<std::string>{"element"}, quote);
     res["setq"] = new PredefinedFunction("setq", new std::vector<std::string>{"atom", "element"}, setq);
     res["func"] = new PredefinedFunction("func", new std::vector<std::string>{"atom", "list", "element"}, func);
     res["lambda"] = new PredefinedFunction("lambda", new std::vector<std::string>{"list", "element"}, lambda);
