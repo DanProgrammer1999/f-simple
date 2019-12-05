@@ -15,10 +15,10 @@ Element *setq(Context *context, List *args) {
     std::string name = Atom::fromElement(args->elements[0])->identifier;
 
     Element *to_set = args->elements[1];
-    std::cout << "[setq] Trying to evaluate arg " << to_set->toString() << std::endl; 
     to_set = eval(context, new List(to_set));
     if(to_set->getExecType() == typeFunction){
         context->set(name, (Function *)to_set);
+        return new Nil();
     }
     auto body = new List(to_set);
     Function *const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
@@ -99,7 +99,9 @@ Element *prog(Context *context, List *args) {
     for (auto elem : body->elements) {
         std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
-        if((Boolean::fromElement(context->get("_return")->eval(context, new List())))->value){
+        
+        auto bool_elem = Boolean::fromElement(context->get("_return")->eval(context, new List()));
+        if(bool_elem->value){
             context->set("_return", (Function *)f_false);
             return res;
         }
@@ -597,19 +599,7 @@ Element *eval(Context *context, List *args) {
                 Function *func = context->get(func_name);
 
                 Elements *eval_args = new Elements();
-                // evaluate args and map to current context
-                for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
-                    std::cout << "Got arg " << (*e)->toString() << "\n";
-
-                    // auto arg = *e;
-                    // if(!func->predefined) {                       
-                    //     std::cout << "Going to eval arg " << arg->toString() << std::endl;
-                    //     arg = eval(context, new List(arg));
-                    //     std::cout << "\nGot " << arg->toString() << std::endl; 
-                    // }
-
-                    eval_args->push_back(*e);
-                }
+                eval_args->insert(eval_args->begin(), list->elements.begin() + 1, list->elements.end());
                 
                 std::cout << "Attempting to make function call to " << func->toString() << std::endl;
                 auto res = func->eval(context, new List(eval_args));

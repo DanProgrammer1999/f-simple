@@ -23,7 +23,7 @@
             (setq i n)
             (while (nonequal i 0)
             (
-                (cons (Fibbo i) res)
+                (cons (Fibo i) res)
                 (minus i 1)
             )
 
