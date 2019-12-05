@@ -17,6 +17,9 @@ Element *setq(Context *context, List *args) {
 
     Element *to_set = args->elements[1];
     to_set = eval(context, new List(to_set));
+    if(to_set->getExecType() == typeAtom){
+        throw CustomException("setq", "Recursive dependency is not allowed: atom " + name + " is not resolved.");
+    }
     if(to_set->getExecType() == typeFunction){
         context->set(name, (Function *)to_set);
         return new Nil();

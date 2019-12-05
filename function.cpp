@@ -18,9 +18,24 @@ Element* CustomFunction::eval(Context *currContext, List *args) {
 
         for (int i = 0; i < this->args->size(); i++) {
             auto empty_args = new std::vector<std::string>();
-            auto value = new List(args->elements[i]);
+            auto curr_arg = args->elements[i];
+            Element *value;
+            
+            if(curr_arg->getExecType() == typeAtom){
+                auto func_name = Atom::fromElement(curr_arg)->identifier;
+                if(!local_context->has(func_name)){
+                    throw NoSuchFunctionException(this->name, func_name);
+                }
+                else{
+                    value = local_context->get(func_name);
+                }
+            }
+            else{
+                value = eval(local_context, new List(args->elements[i]));
+            }
+
             auto arg = new CustomFunction((*(this->args))[i], empty_args,
-                                          value, local_context);
+                                          new List(value), local_context);
             local_context->set((*(this->args))[i], arg);
         }
         auto res = local_context->get("eval")->eval(local_context, this->body);
