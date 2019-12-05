@@ -65,7 +65,10 @@ public:
     };
 
     Element *eval(Context *currContext, List *args) override {
-        validate_args_number(args->elements.size());
+        if (args->elements.size() != this->args_number) {
+            std::cout << "WHYYY: " << args->toString() << "\n";
+            throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
+        }        
         std::cout << "Called predefined function " << this->name << std::endl;
         return this->handler(currContext, args);
     }

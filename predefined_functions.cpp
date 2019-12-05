@@ -42,7 +42,7 @@ Element *func(Context *context, List *args) {
 
     std::string name = Atom::fromElement(args->elements[0])->identifier;
     std::vector<std::string> *func_args = new std::vector<std::string>();
-    List* body = List::fromElement(args->elements[2]);
+    List* body = new List(args->elements[2]);
 
     for (Element *arg : List::fromElement(args->elements[1])->elements) {
         if (arg->getExecType() != typeAtom) {
@@ -599,15 +599,16 @@ Element *eval(Context *context, List *args) {
                 Elements *eval_args = new Elements();
                 // evaluate args and map to current context
                 for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
-                    Element *arg = *e;
-                    std::cout << "Got arg " << arg->toString() << "\n";
-                    if(!func->predefined) {                       
-                        std::cout << "Going to eval arg " << arg->toString() << std::endl;
-                        arg = eval(context, new List(arg));
-                        std::cout << "\nGot " << arg->toString() << std::endl; 
-                    }
+                    std::cout << "Got arg " << (*e)->toString() << "\n";
 
-                    eval_args->push_back(arg);
+                    // auto arg = *e;
+                    // if(!func->predefined) {                       
+                    //     std::cout << "Going to eval arg " << arg->toString() << std::endl;
+                    //     arg = eval(context, new List(arg));
+                    //     std::cout << "\nGot " << arg->toString() << std::endl; 
+                    // }
+
+                    eval_args->push_back(*e);
                 }
                 
                 func->validate_args_number(eval_args->size());

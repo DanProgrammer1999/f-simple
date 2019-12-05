@@ -8,10 +8,13 @@
 
 (setq a 1)
 (setq x 2)
-(while (less a 5) ( 
-        (setq a (plus a 1)) (setq x (times x 2)) (setq f 1))
+(while (less a 5) 
+( 
+    (setq a (plus a 1)) 
+    (setq x (times x 2)) 
+    (setq f 1))
 )
 
 (setq c (equal a b))
 (c)
-(return f)
+(f)

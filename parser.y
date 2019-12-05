@@ -52,7 +52,7 @@
 %%
 
 Program
-	: Elements END {root = new List($1); root->print(); Element* calculated = prog(global, new List(root)); calculated->print();}
+	: Elements END {root = new List($1);}
 	;
 
 Elements
@@ -99,8 +99,8 @@ int main(int argc, char **argv)
 			if (no_err) {
 				std::cout << root << std::endl;
 			}
-			// auto res = prog(context, root);
-			// std::cout << "\nProgram returned " << res->toString() << std::endl;
+			Element* res = prog(global, new List(root)); 
+			std::cout << "\nProgram returned " << res->toString() << std::endl;
 			// clearerr(stdin);
 			rewind(stdin);
 		} catch (const std::exception& e) {
