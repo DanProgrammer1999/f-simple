@@ -90,10 +90,24 @@ Element *prog(Context *context, List *args) {
     for (auto elem : args->elements) {
         std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
+        if((Boolean::fromElement(context->get("_return")->eval(context, new List{})))->value){
+            context->set("_return", (Function *)f_false);
+            return res;
+        }
         std::cout << "\033[35m" << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\033[0m\n\n";         
     }
 
     return new Integer(0);
+}
+
+Element *f_return(Context *context, List *args){
+    context->set("_return", (Function *)f_true);
+    if(args->elements.size() == 0){
+        return new Nil();
+    }
+    else{
+        return eval(context, new List(args->elements[0]));
+    }
 }
 
 // Takes two (or three) elements: (condition, body1, body2)
@@ -136,13 +150,6 @@ Element *f_while(Context *context, List *args) {
 
         prog(context, body);
     }
-}
-
-// Takes one element
-// and returns it as the result of function (only used in functions)
-Element *f_return(Context *context, List *args) {
-    Element *res_to_return = eval(context, new List(args->elements[0]));
-    // [TODO: Break function execution]
 }
 
 // Do not has any arguments,
@@ -632,12 +639,12 @@ std::map<std::string, Function *> getDefaultFunctions() {
     res["setq"] = new PredefinedFunction("setq", new std::vector<std::string>{"atom", "element"}, setq);
     res["func"] = new PredefinedFunction("func", new std::vector<std::string>{"atom", "list", "element"}, func);
     res["lambda"] = new PredefinedFunction("lambda", new std::vector<std::string>{"list", "element"}, lambda);
-    res["prog"] = new PredefinedFunction("prog", new std::vector<std::string>{"list", "element"}, prog);
+    res["prog"] = new PredefinedFunction("prog", new std::vector<std::string>{"list"}, prog);
     res["cond"] = new PredefinedFunction("cond", new std::vector<std::string>{"if-cond", "then-body", "else-body"},
                                          cond);
     res["while"] = new PredefinedFunction("while", new std::vector<std::string>{"loop-cond", "body"}, f_while);
-    res["return"] = new PredefinedFunction("return", new std::vector<std::string>{"element"}, f_return);
     res["break"] = new PredefinedFunction("break", new std::vector<std::string>{}, f_break);
+    res["return"] = new PredefinedFunction("return", new std::vector<std::string>{"value"}, f_return);
 
     // Arithmetic functions
     res["plus"] = new PredefinedFunction("plus", new std::vector<std::string>{"element1", "element2"}, plus);
@@ -683,6 +690,7 @@ std::map<std::string, Function *> getDefaultFunctions() {
     res["true"] = new PredefinedFunction("true", new std::vector<std::string>{}, f_true);
     res["false"] = new PredefinedFunction("false", new std::vector<std::string>{}, f_false);
     res["_break"] = new PredefinedFunction("_break", new std::vector<std::string>{}, f_false);
+    res["_return"] = new PredefinedFunction("_return", new std::vector<std::string>{}, f_false);
 
     return res;
 }

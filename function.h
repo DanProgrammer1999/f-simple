@@ -44,7 +44,11 @@ public:
 
     std::string toString() override {
         std::stringstream res;
-        res << "<Function " << this->name << "(" << this->args << ")";
+        res << "<Function " << this->name << "(";
+        for(auto arg : *(this->args)){
+            res << arg << ", ";
+        } 
+        res << ")>";
         return res.str();
     }
 };
@@ -76,11 +80,6 @@ public:
                    Context *localContext) : Function(name, args), localContext(localContext) {
 
         this->body = body;
-        std::cout << "[CustomFunction()] with body:\n";
-        for(Element *elem : this->body->elements){
-            std::cout << elem->toString() << std::endl;
-        }
-        std::cout << "<<end of body>>";
     };
 
     Element *eval(Context *currContext, List *args) override;
