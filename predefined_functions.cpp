@@ -578,13 +578,6 @@ Element *eval(Context *context, List *args) {
 
             return operand;
         }
-        case typeNil:
-        case typeBoolean:
-        case typeInteger:
-        case typeFunction:
-        case typeReal:
-            std::cout << "\nReturning as is" << std::endl;
-            return operand;
         case typeList: {
             std::cout << "Eval got list" << std::endl;
             List *list = List::fromElement(operand);
@@ -625,9 +618,14 @@ Element *eval(Context *context, List *args) {
                 return res;
             }
         }
+        case typeNil:
+        case typeBoolean:
+        case typeInteger:
+        case typeFunction:
+        case typeReal:
         default:
-            std::cout << "Not implemented yet" << std::endl;
-            return nullptr;
+            std::cout << "\nReturning as is" << std::endl;
+            return operand;
     }
 }
 
