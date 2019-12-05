@@ -98,14 +98,17 @@ int main(int argc, char **argv)
 			yyparse();
 			if (no_err) {
 				std::cout << root << std::endl;
+				Element* res = prog(global, new List(root)); 
+				std::cout << "\nProgram returned " << res->toString() << std::endl;
+			} else {
+				std::cout << "SYNTAX ERROR HANDLED\n";
 			}
-			Element* res = prog(global, new List(root)); 
-			std::cout << "\nProgram returned " << res->toString() << std::endl;
-			// clearerr(stdin);
-			rewind(stdin);
+			// ungetc(EOF, stdin);
+			clearerr(stdin);
 		} catch (const std::exception& e) {
+			std::cout << "ERROR HANDLED: ";
 			std::cout << e.what() << std::endl;
-			// clearerr(stdin);
+			clearerr(stdin);
 		}
 	} while (interactive);
     
