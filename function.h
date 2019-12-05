@@ -66,7 +66,7 @@ public:
 
     Element *eval(Context *currContext, List *args) override {
         if (args->elements.size() != this->args_number) {
-            std::cout << "WHYYY: " << args->toString() << "\n";
+            std::cout << "Predefined function has incorrect number of args: " << args->toString() << "\n";
             throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
         }        
         std::cout << "Called predefined function " << this->name << std::endl;
@@ -80,18 +80,17 @@ protected:
     Context *localContext;
 public:
     CustomFunction(std::string name, std::vector<std::string> *args, List *body,
-                   Context *localContext) : Function(name, args), localContext(localContext) {
-
-        this->body = body;
-    };
+                   Context *localContext);
 
     Element *eval(Context *currContext, List *args) override;
 };
 
 class LambdaFunction : public CustomFunction {
+private:
+    bool execType;
 public:
     LambdaFunction(std::vector<std::string> *args, List *body, Context *localContext) :
-            CustomFunction("<lambda_func>", args, body, localContext) {
+            CustomFunction("<lambda_func>", args, body, localContext), execType(typeFunction) {
         this->lambda = true;
     };
 };

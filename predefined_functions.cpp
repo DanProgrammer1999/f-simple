@@ -17,6 +17,9 @@ Element *setq(Context *context, List *args) {
     Element *to_set = args->elements[1];
     std::cout << "[setq] Trying to evaluate arg " << to_set->toString() << std::endl; 
     to_set = eval(context, new List(to_set));
+    if(to_set->getExecType() == typeFunction){
+        context->set(name, (Function *)to_set);
+    }
     auto body = new List(to_set);
     Function *const_func = new CustomFunction(name, new std::vector<std::string>{}, body, context);
     context->set(name, const_func);
@@ -51,7 +54,7 @@ Element *func(Context *context, List *args) {
         func_args->push_back(Atom::fromElement(arg)->identifier);
     }   
 
-    auto function = new CustomFunction(name, func_args, body, context);
+    auto function = new CustomFunction(name, func_args, body, context->copy());
     context->set(name, function);
 
     return new Nil();
@@ -61,20 +64,24 @@ Element *func(Context *context, List *args) {
 // Store args and body, evaluate lambda function
 Element *lambda(Context *context, List *args) {
     if (args->elements[0]->getExecType() != typeList) {
-        throw TypeMismatchException("lambda", toString(args->elements[0]->getExecType()), toString(typeList));
+        throw TypeMismatchException("func", toString(args->elements[1]->getExecType()), toString(typeList));
     }
-    std::vector<std::string> func_args;
-    List *body = List::fromElement(args->elements[2]);
 
-    for (Element *arg : ((List *) args->elements[1])->elements) {
+    if (args->elements[1]->getExecType() != typeList) {
+        throw TypeMismatchException("func", toString(args->elements[2]->getExecType()), toString(typeList));
+    }
+
+    std::vector<std::string> *func_args = new std::vector<std::string>();
+    List* body = new List(args->elements[1]);
+
+    for (Element *arg : List::fromElement(args->elements[0])->elements) {
         if (arg->getExecType() != typeAtom) {
             throw TypeMismatchException("func", toString(arg->getExecType()), toString(typeAtom));
         }
-        func_args.push_back(Atom::fromElement(arg)->identifier);
-    }
+        func_args->push_back(Atom::fromElement(arg)->identifier);
+    }   
 
-    Function *function = new LambdaFunction(&func_args, body, context);
-
+    auto function = new LambdaFunction(func_args, body, context);
     return function;
 }
 
@@ -86,14 +93,13 @@ Element *prog(Context *context, List *args) {
     if (args->elements[0]->getExecType() != typeList) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
-    std::cout << args->elements[0]->toString() << "\n";
+    args->elements[0]->print();
 
     List *body = List::fromElement(args->elements[0]);
     for (auto elem : body->elements) {
         std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
         if((Boolean::fromElement(context->get("_return")->eval(context, new List())))->value){
-            std::cout << "HEREE\n"; 
             context->set("_return", (Function *)f_false);
             return res;
         }
@@ -575,6 +581,7 @@ Element *eval(Context *context, List *args) {
         case typeNil:
         case typeBoolean:
         case typeInteger:
+        case typeFunction:
         case typeReal:
             std::cout << "\nReturning as is" << std::endl;
             return operand;
@@ -611,7 +618,6 @@ Element *eval(Context *context, List *args) {
                     eval_args->push_back(*e);
                 }
                 
-                func->validate_args_number(eval_args->size());
                 std::cout << "Attempting to make function call to " << func->toString() << std::endl;
                 auto res = func->eval(context, new List(eval_args));
                 std::cout << "Function " << func_name << " returned " << res->toString() << "\n\n";

@@ -1,5 +1,5 @@
 // Checking quote functionality
-// ( setq a '(plus 1 2) )
+( setq b '(plus 1 2) )
 // TODO Print a and b [should be (plus 1 2) both]
 
 // Checking lambda functionality
