@@ -87,7 +87,8 @@ Element *prog(Context *context, List *args) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
 
-    for (auto elem : args->elements) {
+    List *body = List::fromElement(args->elements[0]);
+    for (auto elem : body->elements) {
         std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
         if((Boolean::fromElement(context->get("_return")->eval(context, new List{})))->value){
