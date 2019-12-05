@@ -86,12 +86,14 @@ Element *prog(Context *context, List *args) {
     if (args->elements[0]->getExecType() != typeList) {
         throw TypeMismatchException("prog", toString(args->elements[0]->getExecType()), toString(typeList));
     }
+    std::cout << args->elements[0]->toString() << "\n";
 
     List *body = List::fromElement(args->elements[0]);
     for (auto elem : body->elements) {
         std::cout << "Expression " << elem->toString() << " starts evaluation\n\n";
         auto res = eval(context, new List(elem));
-        if((Boolean::fromElement(context->get("_return")->eval(context, new List{})))->value){
+        if((Boolean::fromElement(context->get("_return")->eval(context, new List())))->value){
+            std::cout << "HEREE\n"; 
             context->set("_return", (Function *)f_false);
             return res;
         }
@@ -598,6 +600,7 @@ Element *eval(Context *context, List *args) {
                 // evaluate args and map to current context
                 for (auto e = list->elements.begin() + 1; e != list->elements.end(); e++) {
                     Element *arg = *e;
+                    std::cout << "Got arg " << arg->toString() << "\n";
                     if(!func->predefined) {                       
                         std::cout << "Going to eval arg " << arg->toString() << std::endl;
                         arg = eval(context, new List(arg));
