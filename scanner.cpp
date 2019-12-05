@@ -476,9 +476,6 @@ int yylex()
 
     if (token.type() == Token::Type::EndOfCode)
     {
-        rewind(stdin);
-        fseek(stdin, 0, SEEK_SET);
-        freopen("/dev/tty", "rw", stdin);
         return -1;
     }
 
