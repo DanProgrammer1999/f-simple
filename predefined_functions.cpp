@@ -91,7 +91,6 @@ Element *lambda(Context *context, List *args) {
 
 // Takes two elements (List, Element): (context, atoms)
 // Sequentially evaluate atoms using given context
-// Do we need it ???
 Element *prog(Context *context, List *args) {
     Element *res = new Integer(0);
     if (args->elements[0]->getExecType() != typeList) {
@@ -105,10 +104,9 @@ Element *prog(Context *context, List *args) {
     List *body = List::fromElement(args->elements[0]);
     for (auto elem : body->elements) {
         res = eval(context, new List(elem));
-        
         auto bool_elem = Boolean::fromElement(context->get("_return")->eval(context, new List()));
-        if(bool_elem->value){
-            context->set("_return", (Function *)f_false);
+        if (bool_elem->value){
+            context->set("_return", context->get("false"));
             return res;
         }
         std::cout << "\033[35m" << "Expression " << elem->toString() << " evaluated and returned " << res->toString() << "\033[0m\n\n";         
@@ -119,11 +117,10 @@ Element *prog(Context *context, List *args) {
 }
 
 Element *f_return(Context *context, List *args){
-    context->set("_return", (Function *)f_true);
-    if(args->elements.size() == 0){
+    context->set("_return", context->get("true"));
+    if(args->elements.size() == 0) {
         return new Nil();
-    }
-    else{
+    } else {
         return eval(context, new List(args->elements[0]));
     }
 }
@@ -161,8 +158,8 @@ Element *f_while(Context *context, List *args) {
             throw TypeMismatchException("while", toString(eval_res->getExecType()), toString(typeBoolean));
         }
 
-        if (!cond_res->value || ((Boolean *)context->get("_break")->eval(context, new List{}))->value) {
-            context->set("_break", (Function *)f_false);
+        if (!cond_res->value || ( (Boolean *)context->get("_break")->eval(context, new List()) )->value) {
+            context->set("_break", context->get("false"));
             return new Nil();
         }
 
@@ -173,7 +170,7 @@ Element *f_while(Context *context, List *args) {
 // Do not has any arguments,
 // Just interupts a loop
 Element *f_break(Context *context, List *args) {
-    context->set("_break", (Function *)f_true);
+    context->set("_break", context->get("true"));
     return new Nil();
 }
 

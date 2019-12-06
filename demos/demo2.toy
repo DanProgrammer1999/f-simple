@@ -1,7 +1,6 @@
 // Calculates approx sqrt (with 0.01 accuracy)
 (func Sqrt(x)
-    ( prog
-        (
+    (prog (
             (setq sqrt 0.00)
             (
                 while (less (times sqrt sqrt) x)
@@ -14,42 +13,42 @@
     )
 )
 
-// Translates to list
-(func ToList (a) ( return (a) ))
-
 // Calculates real roots of quadratic equation
 // A, B, C are coefficients of the equation
 (func QuadraticRoots (A B C)
-     ( prog
-        // D = B * B - 4 * A * C
-        (setq D (minus (times B B) (times 4 (times A C))))
-
-        (
-            cond (less D 0)
+    (prog (
+            // D = B * B - 4 * A * C
+            (setq D (minus (times B B) (times 4.0 (times A C))))
             (
-                // No real roots
-                return ()
-            ) 
-            ( prog
-                (setq x1 (divide (plus (minus 0 B) (Sqrt D)) (times 2 A)))
-                cond (equal D 0)
+                cond (less D 0.0)
                 (
-                    // One real root
-                    return (ToList x1)
-                )
-                (
-                    // Two real roots
-                    (setq x2 (divide (minus (minus 0 B) (Sqrt D)) (times 2 A)))
-                    (return (cons x2 (ToList x1)))
+                    // No real roots
+                    return ()
+                ) 
+                (prog (
+                        (setq x1 (divide (plus (minus 0.0 B) (Sqrt D)) (times 2.0 A)))
+                        (cond (equal D 0.0)
+                            (
+                                // One real root
+                                return (eval x1)
+                            )
+                            (
+                                // Two real roots
+                                prog (
+                                    (setq x2 (divide (minus (minus 0.0 B) (Sqrt D)) (times 2.0 A)))
+                                    (setq res ())
+                                    (setq res (cons (eval x2) res))
+                                    (setq res (cons (eval x1) res))
+                                    (return res)
+                                )
+                            )
+                        )
+                    )
                 )
             )
         )
-
     )
 )
 
 // Define & execute Main Function
-(func Main()  (QuadraticRoots 4 4 1))
-
-// TODO Print result
-( Main )
+(QuadraticRoots 4.0 4.0 -1.0)

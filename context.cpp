@@ -5,8 +5,9 @@ Context::Context() {
     }
 
 void Context::print(){
-    for(auto it = this->functions.cbegin(); it != this->functions.cend(); ++it){
-            std::cout << it->first << " " << it->second->toString() << "\n";
+    for (auto it = this->functions.cbegin(); it != this->functions.cend(); ++it) {
+            std::cout << it->first << "\n"; 
+            std::cout << it->second->toString() << "\n";
     }
 }
 
