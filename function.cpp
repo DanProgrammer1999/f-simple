@@ -8,6 +8,7 @@
 };
 
 Element* CustomFunction::eval(Context *currContext, List *args) {
+        std::cout << "[Temp] " << args->toString() << std::endl;
         if (args->elements.size() != this->args_number) {
             std::cout << "Custom function has incorrect number of args: " << args->toString() << "\n";
             throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
@@ -21,18 +22,8 @@ Element* CustomFunction::eval(Context *currContext, List *args) {
             auto curr_arg = args->elements[i];
             Element *value;
             
-            if(curr_arg->getExecType() == typeAtom){
-                auto func_name = Atom::fromElement(curr_arg)->identifier;
-                if(!local_context->has(func_name)){
-                    throw NoSuchFunctionException(this->name, func_name);
-                }
-                else{
-                    value = local_context->get(func_name);
-                }
-            }
-            else{
-                value = eval(local_context, new List(args->elements[i]));
-            }
+            // can't directly call eval, cause it is shadowed by this function name
+            value = local_context->get("eval")->eval(local_context, new List(args->elements[i]));
 
             auto arg = new CustomFunction((*(this->args))[i], empty_args,
                                           new List(value), local_context);
