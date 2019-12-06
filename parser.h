@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 
 static int tabPadding = 0;
@@ -20,21 +21,22 @@ enum ExecutionType
     typeBoolean,
     typeNil,
     typeList,
-    typePredefinedList
+    typePredefinedList,
+    typeFunction,
 };
 
-const std::string toString(ExecutionType type) {
+static std::string toString(ExecutionType type) {
     switch (type) {
-        typeElement: return "Element";
-        typeAtom: return "Atom";
-        typeKeyword: return "Keyword";
-        typeLiteral: return "Literal";
-        typeInteger: return "Integer";
-        typeReal: return "Real";
-        typeBoolean: return "Boolean";
-        typeNil: return "Nil";
-        typeList: return "List";
-        typePredefinedList: return "List";
+        case typeElement: return "Element";
+        case typeAtom: return "Atom";
+        case typeKeyword: return "Keyword";
+        case typeLiteral: return "Literal";
+        case typeInteger: return "Integer";
+        case typeReal: return "Real";
+        case typeBoolean: return "Boolean";
+        case typeNil: return "Nil";
+        case typeList: return "List";
+        case typePredefinedList: return "List";
         default:
             return "UNKNOWN TYPE";
     }
@@ -51,6 +53,7 @@ protected:
 
 public:
     virtual void print() {}
+    virtual std::string toString(){ return "<Something else>";};
     ExecutionType getExecType()
     {
         return execType;
@@ -75,6 +78,15 @@ public:
         }
         tabPadding--;
     }
+
+    std::string toString() {
+        std::stringstream output;
+        output << "<Program>" << std::endl;
+        for(auto elem = elements.begin(); elem != elements.end(); ++elem){
+            output << "\t" << (*elem)->toString() << std::endl;
+        }
+        return output.str();
+    }
 };
 
 class Atom : public Element
@@ -98,6 +110,10 @@ public:
         std::cout << std::setw(tabPadding * 6) << "|---"
                   << " ATOM->" << identifier << std::endl;
         tabPadding--;
+    }
+
+    std::string toString() override {
+        return std::string("<Atom> ") + identifier;
     }
 
     static Atom *fromElement(Element *element){
@@ -166,6 +182,18 @@ public:
                   << " INTEGER->" << value << std::endl;
         tabPadding--;
     }
+
+    std::string toString() override{
+        return std::string("<Integer> ") + std::to_string(value);
+    }
+
+    static Integer *fromElement(Element *element){
+        if(element->getExecType() != typeInteger){
+            return nullptr;
+        }
+
+        return static_cast<Integer *>(element);
+    }
 };
 
 class Real : public Literal
@@ -189,6 +217,18 @@ public:
                   << " REAL->" << value << std::endl;
         tabPadding--;
     }
+
+    std::string toString() override{
+        return std::string("<Real> ") + std::to_string(value);
+    }
+
+    static Real *fromElement(Element *element){
+        if(element->getExecType() != typeReal){
+            return nullptr;
+        }
+
+        return static_cast<Real *>(element);
+    }
 };
 
 class Boolean : public Literal
@@ -208,25 +248,27 @@ public:
                   << " BOOL->" << value << std::endl;
         tabPadding--;
     }
+
+    std::string toString() override{
+        return std::string("<Boolean> ") + std::to_string(value);
+    }
+
+    static Boolean *fromElement(Element *element){
+        if(element->getExecType() != typeBoolean){
+            return nullptr;
+        }
+
+        return static_cast<Boolean *>(element);
+    }
 };
 
 class Nil : public Literal
 {
-private:
-    static Nil* object;
-    Nil()
-    {
+public:
+    Nil() {
         execType = typeNil;
     }
 
-public:
-    static Nil* getNil(){
-        if(object == nullptr){
-            object = new Nil();
-        }
-
-        return object;
-    }
     void print() override
     {
         tabPadding++;
@@ -234,6 +276,10 @@ public:
         std::cout << "|---"
                   << " NULL" << std::endl;
         tabPadding--;
+    }
+
+    std::string toString() override{
+        return std::string("<Nil> ");
     }
 };
 
@@ -246,8 +292,15 @@ public:
     {
         execType = typeList;
     }
-    List(Elements elements) : elements(elements)
+
+    List(Element *element)
     {
+        elements = *(new Elements{element});
+        execType = typeList;
+    }
+
+    List(Elements *elements){
+        this->elements = *elements;
         execType = typeList;
     }
 
@@ -262,6 +315,18 @@ public:
             elements.at(i)->print();
         }
         tabPadding--;
+    }
+
+    std::string toString() override{
+        std::stringstream message_stream;
+        message_stream << "<List> ( ";
+        for(auto elem = elements.begin(); elem != elements.end(); ++elem){
+            message_stream << (*elem)->toString() << "; ";
+        }
+
+        message_stream << ")";
+
+        return message_stream.str();
     }
 
     static List *fromElement(Element *element){
@@ -279,7 +344,7 @@ public:
     PredefinedList(Keyword *keyword, Elements elements)
     {
         execType = typeList;
-        elements.push_back(keyword);
+        this->elements.push_back(keyword);
         this->elements.insert(this->elements.end(), elements.begin(), elements.end());
     }
 
@@ -296,5 +361,9 @@ public:
         tabPadding--;
     }
 };
+
+Integer *toInteger(Element *element);
+Real *toReal(Element *element);
+Boolean *toBool(Element *element);
 
 #endif //F_SIMPLE_PARSER_H

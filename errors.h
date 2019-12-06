@@ -1,7 +1,7 @@
 #ifndef F_SIMPLE_ERRORS_H
 #define F_SIMPLE_ERRORS_H
 
-#include <bits/exception.h>
+ #include <bits/exception.h>
 #include <string>
 #include <sstream>
 #include <exception>
@@ -14,6 +14,10 @@ public:
 
     const char *what() const throw() override {
         return this->message.c_str();
+    }
+
+    const std::string toString() {
+        return this->message;
     }
 };
 
@@ -54,7 +58,7 @@ public:
 
     static std::string build_message(std::string function_name, std::string received, std::string required) {
         std::stringstream message_stream;
-        message_stream << "Incorrect number of arguments received in function " << function_name << "\n";
+        message_stream << "Incorrect type of argument received in function " << function_name << "\n";
         message_stream << "Received type " << received << ", but type " << required << " is expected" << std::endl;
 
         return message_stream.str();
@@ -62,6 +66,7 @@ public:
 };
 
 class NoSuchFunctionException : SemanticException {
+public:
     NoSuchFunctionException(std::string function_name, std::string name_received) :
     SemanticException(build_message(function_name, name_received)) {};
 

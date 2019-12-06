@@ -9,8 +9,7 @@ Innopolis University
 Program is a sequence of elements. Each element is evaluated as soon as it is parsed.
 
 ## How to evaluate element
-- If it is a literal, just return its value
-- If it is an atom, try to lookup its value in Context, otherwise throw error (?)
+- If it is a literal or an atom, just return its value
 - If it is a list, evaluate it and return the result
 
 ## How to evaluate list

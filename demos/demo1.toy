@@ -1,0 +1,38 @@
+// Returns n-th Fibbonacci number
+(func Fibo(n)
+    ( prog
+        (
+            (func FibIter(a b count) (
+                prog (
+                    (setq a1 (plus a b))
+                    (setq b1 a)
+                    (setq res (
+                        cond (equal count 0)
+                        (b)
+                        (FibIter a1 b1 (minus count 1))
+                    ))
+                    (return res)
+                )
+            ))
+            (return (FibIter 1 0 n))
+        )
+    )
+)
+
+// Returns list of n Fibbonacci numbers (from 1)
+(func Fibonacci(n)
+    ( prog
+        (
+            (setq res ())
+            (setq i n)
+            (while (nonequal i 0) (
+                (setq res (cons (Fibo i) res))
+                (setq i (minus i 1))
+            ))
+            (return res)
+        )
+    )
+)
+
+(Fibonacci 10)
+//(FibIter 1 2 3)

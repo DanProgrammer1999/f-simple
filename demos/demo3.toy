@@ -1,0 +1,22 @@
+// Checking head and tail functionality
+( setq l (1 2 3 4 5) )
+( setq h (head l) )
+( setq t (tail l) )
+(h) // 1
+(t) // (2 3 4 5)
+
+// Checking predicates functionality
+( setq i 10 )
+( setq f 10.5 )
+( setq b1 (isint i) )
+( setq b2 (isreal f) )
+( setq b3 (islist b1) )
+(b1) // True
+(b2) // True
+(b3) // False
+
+// Checking logical operators functionality
+( setq b4 (and b2 b3) )
+( setq b5 (or b2 b3) )
+(b4) // False
+(b5) // True

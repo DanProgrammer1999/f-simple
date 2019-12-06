@@ -7,6 +7,9 @@
 #include "function.h"
 #include "context.h"
 
+class Context;
+class Function;
+
 Element *quote(Context *context, List *args);
 Element *setq(Context *context, List *args);
 Element *func(Context *context, List *args);
@@ -44,4 +47,5 @@ Element *nil(Context *context, List *args);
 Element *f_true(Context *context, List *args);
 Element *f_false(Context *context, List *args);
 
+std::map<std::string, Function *> getDefaultFunctions();
 #endif //F_SIMPLE_PREDEFINED_FUNCTIONS_H

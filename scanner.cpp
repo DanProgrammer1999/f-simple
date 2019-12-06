@@ -71,7 +71,7 @@ public:
     char peek() { return m_start; }
     char get()
     {
-        m_start = getchar();
+        m_start = getc(stdin);
         return m_start;
     }
     void reset() { ungetc(m_start, stdin); }
@@ -271,7 +271,7 @@ Token Lexer::next()
     case ')':
         return atom(Token::Type::RParent);
     case '\'':
-        return atom(Token::Type::Keyword);
+        return Token(Token::Type::Keyword, "'");
     case '-':
         start += m_start;
         get();
@@ -329,6 +329,7 @@ Token Lexer::keyword(std::string lexeme)
         return Token(Token::Type::Boolean, lexeme);
 
     if (
+        lexeme == "quote" ||
         lexeme == "setq" ||
         lexeme == "func" ||
         lexeme == "lambda" ||
@@ -474,7 +475,6 @@ int yylex()
 
     if (token.type() == Token::Type::EndOfCode)
     {
-        clearerr(stdin);
         return -1;
     }
 

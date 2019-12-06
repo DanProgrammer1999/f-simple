@@ -1,0 +1,8 @@
+// Testing recursion
+(func Rec(a b) (
+    cond (equal a 0)
+    (b)
+    (Rec (minus a 1) (plus b 2))
+))
+
+(Rec 10 0)

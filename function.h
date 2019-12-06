@@ -12,6 +12,9 @@
 #include "errors.h"
 #include "context.h"
 
+class Context;
+
+
 typedef Element *(*FunctionPointer)(Context *, List *);
 
 class Function : public Element {
@@ -19,10 +22,14 @@ protected:
     std::string name{};
     std::vector<std::string> *args;
     int args_number;
-    bool lambda{false};
+    ExecutionType execType;
 
     Function(std::string name, std::vector<std::string> *args) :
-            name(name), args(args), args_number(args->size()) {};
+            name(name), args(args), args_number(args->size()), execType(typeFunction) {};
+
+public:
+    bool predefined{false};
+    bool lambda{false};
 
     // Context here so that predefined functions can access it
     virtual Element *eval(Context *currContext, List *args) {
@@ -31,13 +38,18 @@ protected:
 
     void validate_args_number(int given_number) {
         if (given_number != this->args_number) {
-            throw new ArgNumberMismatchException(this->name, given_number, this->args_number)
+            throw new ArgNumberMismatchException(this->name, given_number, this->args_number);
         }
     }
 
-    void print() override {
+    std::string toString() override {
         std::stringstream res;
-        res << "<Function " << this->name << "(" << this->args << ")";
+        res << "<Function " << this->name << "(";
+        for(auto arg : *(this->args)){
+            res << arg << ", ";
+        } 
+        res << ")>";
+        return res.str();
     }
 };
 
@@ -48,39 +60,36 @@ private:
 
 public:
     PredefinedFunction(std::string name, std::vector<std::string> *args, FunctionPointer handler) :
-            Function(name, args), handler(handler) {};
+            Function(name, args), handler(handler){
+        this->predefined = true;
+    };
 
     Element *eval(Context *currContext, List *args) override {
-        validate_args_number(args->elements.size());
+        if (args->elements.size() != this->args_number) {
+            std::cout << "Predefined function has incorrect number of args: " << args->toString() << "\n";
+            throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
+        }        
         return this->handler(currContext, args);
     }
 };
 
 class CustomFunction : public Function {
 protected:
-    std::vector<Element *> *body;
+    List *body;
     Context *localContext;
 public:
-    CustomFunction(std::string name, std::vector<std::string> *args, std::vector<Element *> *body,
-                   Context *localContext) : Function(name, args), body(body), localContext(localContext) {};
+    CustomFunction(std::string name, std::vector<std::string> *args, List *body,
+                   Context *localContext);
 
-    Element *eval(Context *currContext, List *args) override {
-        if (args->elements.size() != this->args_number) {
-            throw new ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);
-        }
-
-        // Context MUST NOT be used here, need it because of override
-        for (auto item : args->elements) {
-            if(item->getExecType() == typeAtom){
-                if(currContext->has(Atom::fromElement(item)->identifier)
-            }
-        }
-    }
+    Element *eval(Context *currContext, List *args) override;
 };
 
 class LambdaFunction : public CustomFunction {
-    LambdaFunction(std::vector<std::string> *args, std::vector<Element *> *body, Context *localContext) :
-            CustomFunction("<lambda_func>", args, body, localContext) {
+private:
+    bool execType;
+public:
+    LambdaFunction(std::vector<std::string> *args, List *body, Context *localContext) :
+            CustomFunction("<lambda_func>", args, body, localContext), execType(typeFunction) {
         this->lambda = true;
     };
 };

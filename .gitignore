@@ -1,3 +1,6 @@
 .idea/
 .vscode/
 cmake-build-debug
+*.tab.c
+*.tab.h
+parser
