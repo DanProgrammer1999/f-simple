@@ -18,6 +18,7 @@ Element *setq(Context *context, List *args) {
     Element *to_set = args->elements[1];
     to_set = eval(context, new List(to_set));
     if(to_set->getExecType() == typeAtom){
+        std::cout << "Custom exception in setq: recursive dependency\n";
         throw CustomException("setq", "Recursive dependency is not allowed: atom " + name + " is not resolved.");
     }
     if(to_set->getExecType() == typeFunction){
@@ -180,14 +181,12 @@ Element *plus(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("plus", "Cannot compare arguments with different types");
-    }
-
     if (a->getExecType() == typeInteger) {
-        return new Integer(((Integer *) a)->value + ((Integer *) b)->value);
+        Integer *res = new Integer(toInteger(a)->value + toInteger(b)->value);
+        return res;
     } else if (a->getExecType() == typeReal) {
-        return new Real(((Real *) a)->value + ((Real *) b)->value);
+        Real *res = new Real(toReal(a)->value + toReal(b)->value);
+        return res;
     } else {
         throw TypeMismatchException("plus", toString(a->getExecType()), "Integer or Real");
     }
@@ -199,14 +198,12 @@ Element *minus(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("minus", "Cannot compare arguments with different types");
-    }
-
     if (a->getExecType() == typeInteger) {
-        return new Integer(((Integer *) a)->value - ((Integer *) b)->value);
+        Integer *res = new Integer(toInteger(a)->value - toInteger(b)->value);
+        return res;
     } else if (a->getExecType() == typeReal) {
-        return new Real(((Real *) a)->value - ((Real *) b)->value);
+        Real *res = new Real(toReal(a)->value - toReal(b)->value);
+        return res;
     } else {
         throw TypeMismatchException("minus", toString(a->getExecType()), "Integer or Real");
     }
@@ -218,14 +215,12 @@ Element *times(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("times", "Cannot compare arguments with different types");
-    }
-
     if (a->getExecType() == typeInteger) {
-        return new Integer(((Integer *) a)->value * ((Integer *) b)->value);
+        Integer *res = new Integer(toInteger(a)->value * toInteger(b)->value);
+        return res;
     } else if (a->getExecType() == typeReal) {
-        return new Real(((Real *) a)->value * ((Real *) b)->value);
+        Real *res = new Real(toReal(a)->value * toReal(b)->value);
+        return res;
     } else {
         throw TypeMismatchException("times", toString(a->getExecType()), "Integer or Real");
     }
@@ -237,14 +232,12 @@ Element *divide(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("divide", "Cannot compare arguments with different types");
-    }
-
-    if (a->getExecType() == typeInteger) {
-        return new Integer(((Integer *) a)->value / ((Integer *) b)->value);
+   if (a->getExecType() == typeInteger) {
+        Integer *res = new Integer(toInteger(a)->value / toInteger(b)->value);
+        return res;
     } else if (a->getExecType() == typeReal) {
-        return new Real(((Real *) a)->value / ((Real *) b)->value);
+        Real *res = new Real(toReal(a)->value / toReal(b)->value);
+        return res;
     } else {
         throw TypeMismatchException("divide", toString(a->getExecType()), "Integer or Real");
     }
@@ -306,17 +299,13 @@ Element *equal(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("equal", "Cannot compare arguments with different types");
-    }
-
     switch (a->getExecType()) {
         case typeBoolean:
-            return new Boolean(((Boolean *) a)->value == ((Boolean *) b)->value);
+            return new Boolean(Boolean::fromElement(a)->value == Boolean::fromElement(b)->value);
         case typeInteger:
-            return new Boolean(((Integer *) a)->value == ((Integer *) b)->value);
+            return new Boolean(Integer::fromElement(a)->value == Integer::fromElement(b)->value);
         case typeReal:
-            return new Boolean(((Real *) a)->value == ((Real *) b)->value);
+            return new Boolean(Real::fromElement(a)->value == Real::fromElement(b)->value);
         default:
             throw TypeMismatchException("equal", toString(a->getExecType()), "Literal");
     }
@@ -328,17 +317,13 @@ Element *nonequal(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("nonequal", "Cannot compare arguments with different types");
-    }
-
     switch (a->getExecType()) {
         case typeBoolean:
-            return new Boolean(((Boolean *) a)->value != ((Boolean *) b)->value);
+            return new Boolean(Boolean::fromElement(a)->value != Boolean::fromElement(b)->value);
         case typeInteger:
-            return new Boolean(((Integer *) a)->value != ((Integer *) b)->value);
+            return new Boolean(Integer::fromElement(a)->value != Integer::fromElement(b)->value);
         case typeReal:
-            return new Boolean(((Real *) a)->value != ((Real *) b)->value);
+            return new Boolean(Real::fromElement(a)->value != Real::fromElement(b)->value);
         default:
             throw TypeMismatchException("nonequal", toString(a->getExecType()), "Literal");
     }
@@ -350,17 +335,13 @@ Element *less(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("less", "Cannot compare arguments with different types");
-    }
-
     switch (a->getExecType()) {
         case typeBoolean:
-            return new Boolean(((Boolean *) a)->value < ((Boolean *) b)->value);
+            return new Boolean(Boolean::fromElement(a)->value < Boolean::fromElement(b)->value);
         case typeInteger:
-            return new Boolean(((Integer *) a)->value < ((Integer *) b)->value);
+            return new Boolean(Integer::fromElement(a)->value < Integer::fromElement(b)->value);
         case typeReal:
-            return new Boolean(((Real *) a)->value < ((Real *) b)->value);
+            return new Boolean(Real::fromElement(a)->value < Real::fromElement(b)->value);
         default:
             throw TypeMismatchException("less", toString(a->getExecType()),
                                         "Literal (number or bool)");
@@ -373,16 +354,13 @@ Element *lesseq(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("lesseq", "Cannot compare arguments with different types");
-    }
     switch (a->getExecType()) {
         case typeBoolean:
-            return new Boolean(((Boolean *) a)->value <= ((Boolean *) b)->value);
+            return new Boolean(Boolean::fromElement(a)->value <= Boolean::fromElement(b)->value);
         case typeInteger:
-            return new Boolean(((Integer *) a)->value <= ((Integer *) b)->value);
+            return new Boolean(Integer::fromElement(a)->value <= Integer::fromElement(b)->value);
         case typeReal:
-            return new Boolean(((Real *) a)->value <= ((Real *) b)->value);
+            return new Boolean(Real::fromElement(a)->value <= Real::fromElement(b)->value);
         default:
             throw TypeMismatchException("lesseq", toString(a->getExecType()),
                                         "Literal (number or bool)");
@@ -395,17 +373,13 @@ Element *greater(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("greater", "Cannot compare arguments with different types");
-    }
-
     switch (a->getExecType()) {
         case typeBoolean:
-            return new Boolean(((Boolean *) a)->value > ((Boolean *) b)->value);
+            return new Boolean(Boolean::fromElement(a)->value > Boolean::fromElement(b)->value);
         case typeInteger:
-            return new Boolean(((Integer *) a)->value > ((Integer *) b)->value);
+            return new Boolean(Integer::fromElement(a)->value > Integer::fromElement(b)->value);
         case typeReal:
-            return new Boolean(((Real *) a)->value > ((Real *) b)->value);
+            return new Boolean(Real::fromElement(a)->value > Real::fromElement(b)->value);
         default:
             throw TypeMismatchException("greater", toString(a->getExecType()),
                                         "Literal (number or bool)");
@@ -418,17 +392,13 @@ Element *greatereq(Context *context, List *args) {
     Element *a = eval(context, new List(args->elements[0]));
     Element *b = eval(context, new List(args->elements[1]));
 
-    if (a->getExecType() != b->getExecType()) {
-        throw CustomException("greatereq", "Cannot compare arguments with different types");
-    }
-
     switch (a->getExecType()) {
         case typeBoolean:
-            return new Boolean(((Boolean *) a)->value >= ((Boolean *) b)->value);
+            return new Boolean(Boolean::fromElement(a)->value >= Boolean::fromElement(b)->value);
         case typeInteger:
-            return new Boolean(((Integer *) a)->value >= ((Integer *) b)->value);
+            return new Boolean(Integer::fromElement(a)->value >= Integer::fromElement(b)->value);
         case typeReal:
-            return new Boolean(((Real *) a)->value >= ((Real *) b)->value);
+            return new Boolean(Real::fromElement(a)->value >= Real::fromElement(b)->value);
         default:
             throw TypeMismatchException("greatereq", toString(a->getExecType()),
                                         "Literal (number or bool)");

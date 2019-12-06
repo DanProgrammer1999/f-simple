@@ -21,7 +21,7 @@ Function *Context::get(std::string name) {
 }
 
 Function *Context::set(std::string name, Function *value){
-    Function *res = nullptr;
+    Function *res = this->functions["nil"];
     if (has(name)) {
         res = functions[name];
     }

@@ -8,7 +8,6 @@
 };
 
 Element* CustomFunction::eval(Context *currContext, List *args) {
-        std::cout << "[Temp] " << args->toString() << std::endl;
         if (args->elements.size() != this->args_number) {
             std::cout << "Custom function has incorrect number of args: " << args->toString() << "\n";
             throw ArgNumberMismatchException(this->name, args->elements.size(), this->args_number);

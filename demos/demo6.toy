@@ -1,0 +1,22 @@
+// for convinience in debugging 
+
+(func mod (a b) (
+    prog (
+        (while (greatereq a b)(
+            (setq a (minus a b))
+        ))
+        (return a)
+    )
+))
+
+(mod 10 3)
+
+(func gcd (a b) (
+    prog (
+        (setq r (mod a b))
+        (cond (equal r 0) (setq res b) (setq res (gcd b r)))
+        (return res)
+    )
+))
+
+(gcd 10 45)
