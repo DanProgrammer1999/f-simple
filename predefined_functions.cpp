@@ -102,6 +102,7 @@ Element *prog(Context *context, List *args) {
     std::cout << "\n";
 
     List *body = List::fromElement(args->elements[0]);
+    context->set("_return", context->get("false"));
     for (auto elem : body->elements) {
         res = eval(context, new List(elem));
         auto bool_elem = Boolean::fromElement(context->get("_return")->eval(context, new List()));

@@ -3,9 +3,16 @@
     ( prog
         (
             (func FibIter(a b count) (
-                cond (equal count 0)
-                (b)
-                (FibIter (plus a b) a (minus count 1))
+                prog (
+                    (setq a1 (plus a b))
+                    (setq b1 a)
+                    (setq res (
+                        cond (equal count 0)
+                        (b)
+                        (FibIter a1 b1 (minus count 1))
+                    ))
+                    (return res)
+                )
             ))
             (return (FibIter 1 0 n))
         )
@@ -19,16 +26,12 @@
             (setq res ())
             (setq i n)
             (while (nonequal i 0) (
-                (cons (Fibo i) res)
-                (minus i 1)
+                (setq res (cons (Fibo i) res))
+                (setq i (minus i 1))
             ))
             (return res)
         )
     )
 )
 
-// Define & execute Main Function
-(func Main() (Fibonacci 10))
-
-// TODO Print result
-( Main )
+(Fibonacci 10)
